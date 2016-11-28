@@ -1,0 +1,35 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "command": "gulp",
+    "isShellCommand": true,
+    "args": [
+        "--no-color"
+    ],
+    "tasks": [{
+            "taskName": "compile-typescript"
+        },
+        {
+            "taskName": "browserify"
+        },
+        {
+            "taskName": "build",
+            "isBuildCommand": true
+        },
+        {
+            "taskName": "pack-and-mini"
+        },
+        {
+            "taskName": "run-unit-tests",
+            "isTestCommand": true
+        },
+        {
+            "isWatching": true,
+            "taskName": "watch"
+        },
+        {
+            "taskName": "sass-and-mini"
+        }
+    ]
+}

@@ -1,0 +1,56 @@
+{
+  "name": "whats-there",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A simple web-app that will tell you what you can make with the ingredients you have.",
+  "main": "index.js",
+  "browserify-shim": {
+    "react": "global:React",
+    "react-dom": "global:ReactDOM",
+    "jquery": "global:$"
+  },
+  "keywords": [
+    "recipes",
+    "ingredients",
+    "cooking"
+  ],
+  "author": "Matthew James",
+  "license": "ISC",
+  "dependencies": {
+    "@types/es6-promise": "0.0.32",
+    "@types/jquery": "^2.0.33",
+    "@types/q": "0.0.32",
+    "@types/react": "^0.14.44",
+    "@types/react-dom": "^0.14.18",
+    "body-parser": "^1.15.2",
+    "bootstrap-sass": "^3.3.7",
+    "browserify": "^13.1.1",
+    "browserify-shim": "^3.8.12",
+    "chai": "^3.5.0",
+    "express": "^4.14.0",
+    "gulp-minifier": "^0.1.4",
+    "gulp-mocha": "^3.0.1",
+    "gulp-typescript": "^3.1.2",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "http": "0.0.0",
+    "jquery": "^3.1.1",
+    "mocha": "^3.1.2",
+    "path": "^0.12.7",
+    "q": "^1.4.1",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "react-image": "^0.1.0",
+    "run-sequence": "^1.2.2",
+    "sqlite3": "^3.1.8",
+    "unirest": "^0.5.1",
+    "uuid": "^2.0.3",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "devDependencies": {
+    "gulp-sourcemaps": "^2.2.0",
+    "source-map-loader": "^0.1.5",
+    "ts-loader": "^1.2.0"
+  }
+}

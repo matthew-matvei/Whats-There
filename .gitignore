@@ -1,0 +1,36 @@
+### General recommendations ###
+
+# Logs
+*.log
+*.log*
+
+### Application specific ###
+
+# Dependency directories
+node_modules
+
+# Everything in dist and mini directories is derivative
+dist/
+mini/
+
+# All JS files in src/ and tests/ directories are derivative
+src/**/*.js
+tests/**/*.js
+
+# Map files only handle the translation from TS to JS
+*.map
+
+# Launch configuration is pretty environment-specific, so it's not shared
+.vscode/launch.json
+
+# User-specific settings are respected, so are not shared
+.vscode/settings.json
+
+# Do not share installed typings definitions
+typings
+
+# 3rd-party style resources
+src/styles/external
+
+# Ignore containers
+*.zip

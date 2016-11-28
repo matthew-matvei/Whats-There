@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "outDir": "./dist/",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "commonjs",
+        "target": "es5",
+        "jsx": "react",
+        "moduleResolution": "node"
+    },
+    "include": [
+        "./src/**/*.ts",
+        "./src/**/*.tsx",
+        "./tests/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "typings"
+    ]
+}
