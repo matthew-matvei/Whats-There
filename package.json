@@ -1,7 +1,7 @@
 {
   "name": "whats-there",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A simple web-app that will tell you what you can make with the ingredients you have.",
   "main": "index.js",
   "browserify-shim": {
@@ -15,7 +15,7 @@
     "cooking"
   ],
   "author": "Matthew James",
-  "license": "ISC",
+  "license": "GPLv3",
   "dependencies": {
     "@types/es6-promise": "0.0.32",
     "@types/jquery": "^2.0.33",
