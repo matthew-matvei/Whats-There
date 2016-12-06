@@ -1,8 +1,9 @@
 /** @author Matthew James <matthew.d.james87@gmail.com> */
 
-import Ingredient from "../ingredient";
-
-/** Interface describes user-determined options that accompany an API call. */
+/**
+ * @interface Interface describes user-determined options that accompany an API
+ * call.
+ */
 export interface ICallOptions {
 
     // the user's list of available ingredients by name

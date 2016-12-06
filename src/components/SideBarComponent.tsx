@@ -1,10 +1,7 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 
-import { User } from "../user";
 import Recipe from "../recipe";
 import Ingredient from "../ingredient";
-import Constants from "../constants";
 
 import ActionsComponent from "./ActionsComponent";
 import IngredientListComponent from "./IngredientListComponent";
@@ -12,9 +9,8 @@ import FavRecipeListComponent from "./FavRecipeListComponent";
 import PastRecipeListComponent from "./PastRecipeListComponent";
 import { ISideBarProps } from "./componentInterfaces";
 
-// TODO: parent component possibly redundant
-
-export default class SideBarComponent extends React.Component<ISideBarProps, {}> {
+export default class SideBarComponent extends
+    React.Component<ISideBarProps, {}> {
 
     constructor(props: ISideBarProps) {
 
@@ -25,7 +21,20 @@ export default class SideBarComponent extends React.Component<ISideBarProps, {}>
         this.moveFavRecipeUp = this.moveFavRecipeUp.bind(this);
     }
 
-    shouldComponentUpdate(nextProps: ISideBarProps): boolean {
+    public render() {
+
+        return <div className="sidebar col-sm-3 col-lg-2">
+            <ActionsComponent onClickSearch={this.moveSearchRequestUp} />
+            <IngredientListComponent ingredients={this.props.ingredients}
+                onClickAddIngredient={this.moveIngredientUp}
+                onClickRemoveIngredient={this.moveIngredientUp} />
+            <FavRecipeListComponent recipes={this.props.favRecipes}
+                onClickRemoveFavRecipe={this.moveFavRecipeUp} />
+            <PastRecipeListComponent recipes={this.props.pastRecipes} />
+        </div>;
+    }
+
+    private shouldComponentUpdate(nextProps: ISideBarProps): boolean {
 
         /*
          * Following assumes that the user's ingredient and recipe arrays
@@ -35,7 +44,8 @@ export default class SideBarComponent extends React.Component<ISideBarProps, {}>
 
             return true;
 
-        } else if (this.props.favRecipes.length !== nextProps.favRecipes.length) {
+        } else if (this.props.favRecipes.length !==
+            nextProps.favRecipes.length) {
 
             return true;
         }
@@ -69,7 +79,7 @@ export default class SideBarComponent extends React.Component<ISideBarProps, {}>
      * @param ingredient
      *      the ingredient to be moved up to the App Component
      */
-    moveIngredientUp(updateType: string, ingredient: Ingredient): void {
+    private moveIngredientUp(updateType: string, ingredient: Ingredient): void {
 
         this.props.pullNewIngredient(updateType, ingredient);
     }
@@ -78,26 +88,13 @@ export default class SideBarComponent extends React.Component<ISideBarProps, {}>
      * Method handles moving a search request up to the root App Component by
      * way of a callback function.
      */
-    moveSearchRequestUp(): void {
+    private moveSearchRequestUp(): void {
 
         this.props.pullSearchClick();
     }
 
-    moveFavRecipeUp(updateType: string, recipe: Recipe): void {
+    private moveFavRecipeUp(updateType: string, recipe: Recipe): void {
 
         this.props.pullNewRecipe(updateType, recipe);
-    }
-
-    render() {
-
-        return <div className="sidebar col-sm-3 col-lg-2">
-            <ActionsComponent onClickSearch={this.moveSearchRequestUp} />
-            <IngredientListComponent ingredients={this.props.ingredients}
-                onClickAddIngredient={this.moveIngredientUp}
-                onClickRemoveIngredient={this.moveIngredientUp} />
-            <FavRecipeListComponent recipes={this.props.favRecipes}
-                onClickRemoveFavRecipe={this.moveFavRecipeUp} />
-            <PastRecipeListComponent recipes={this.props.pastRecipes} />
-        </div>;
     }
 }

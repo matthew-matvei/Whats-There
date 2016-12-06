@@ -1,9 +1,7 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 
 import $ = require("jquery");
 
-import { User } from "../user";
 import Recipe from "../recipe";
 import Ingredient from "../ingredient";
 import Constants from "../constants";
@@ -15,7 +13,8 @@ import SideBarComponent from "./SideBarComponent";
 import MainComponent from "./MainComponent";
 import { IAppProps, IAppState } from "./componentInterfaces";
 
-export default class AppComponent extends React.Component<IAppProps, IAppState> {
+export default class AppComponent extends
+    React.Component<IAppProps, IAppState> {
 
     constructor(props: IAppProps) {
 
@@ -24,7 +23,8 @@ export default class AppComponent extends React.Component<IAppProps, IAppState> 
         this.state = {
 
             user: this.props.user,
-            searchResults: new Array<Recipe>()
+            searchResults: new Array<Recipe>(),
+            isSearching: false
 
         } as IAppState;
 
@@ -32,6 +32,34 @@ export default class AppComponent extends React.Component<IAppProps, IAppState> 
         this.updateFavouriteRecipes = this.updateFavouriteRecipes.bind(this);
         this.updatePastRecipes = this.updatePastRecipes.bind(this);
         this.searchRecipes = this.searchRecipes.bind(this);
+    }
+
+    public render() {
+
+        return <div>
+            <div className="row">
+                <HeaderComponent name={this.props.user.getName()} />
+            </div>
+            <div className="row">
+                <div className="col-xs-12">
+                    <div className="row">
+                        <SideBarComponent
+                            ingredients={this.props.user.getIngredients()}
+                            favRecipes={this.props.user.getFavRecipes()}
+                            pastRecipes={this.props.user.getPastRecipes()}
+                            pullNewIngredient={this.updateIngredients}
+                            pullNewRecipe={this.updateFavouriteRecipes}
+                            pullSearchClick={this.searchRecipes} />
+                        <MainComponent results={this.state.searchResults}
+                            ownedIngredients={this.props.user.getIngredients()}
+                            name={this.props.user.getName()}
+                            isSearching={this.state.isSearching}
+                            pullNewFavouriteRecipe={this.updateFavouriteRecipes}
+                            pullNewPastRecipe={this.updatePastRecipes} />
+                    </div>
+                </div>
+            </div>
+        </div>;
     }
 
     /**
@@ -55,7 +83,8 @@ export default class AppComponent extends React.Component<IAppProps, IAppState> 
      *      the ingredient to either add to or remove from the user's list of
      *      ingredients
      */
-    updateIngredients(updateType: string, ingredient: Ingredient): void {
+    private updateIngredients(updateType: string,
+        ingredient: Ingredient): void {
 
         if (updateType === Constants.UPDATE_ADD) {
 
@@ -70,7 +99,7 @@ export default class AppComponent extends React.Component<IAppProps, IAppState> 
         this.forceUpdate();
     }
 
-    updateFavouriteRecipes(updateType: string, recipe: Recipe) {
+    private updateFavouriteRecipes(updateType: string, recipe: Recipe) {
 
         if (updateType === Constants.UPDATE_ADD) {
 
@@ -85,7 +114,7 @@ export default class AppComponent extends React.Component<IAppProps, IAppState> 
         this.forceUpdate();
     }
 
-    updatePastRecipes(recipe: Recipe) {
+    private updatePastRecipes(recipe: Recipe) {
 
         this.state.user.addPastRecipe(recipe);
 
@@ -99,7 +128,7 @@ export default class AppComponent extends React.Component<IAppProps, IAppState> 
      * user's current ingredients and updating the state of
      * this.state.searchResults
      */
-    searchRecipes(): void {
+    private searchRecipes(): void {
 
         let searchOptions = {
 
@@ -108,6 +137,12 @@ export default class AppComponent extends React.Component<IAppProps, IAppState> 
             ratio: 1
 
         } as ICallOptions;
+
+        this.setState({
+
+            isSearching: true
+
+        } as IAppState);
 
         // the scope of 'this' changes inside AJAX call, so it's stored here
         let thisApp = this;
@@ -125,37 +160,10 @@ export default class AppComponent extends React.Component<IAppProps, IAppState> 
                 // updates this.state.searchResults with those retrieved
                 thisApp.setState({
 
+                    isSearching: false,
                     searchResults: new Array<Recipe>().concat(searchResults)
 
                 } as IAppState);
             });
     }
-
-    render() {
-
-        return <div>
-            <div className="row">
-                <HeaderComponent name={this.props.user.getName()} />
-            </div>
-            <div className="row">
-                <div className="col-xs-12">
-                    <div className="row">
-                        <SideBarComponent
-                            ingredients={this.props.user.getIngredients()}
-                            favRecipes={this.props.user.getFavRecipes()}
-                            pastRecipes={this.props.user.getPastRecipes()}
-                            pullNewIngredient={this.updateIngredients}
-                            pullNewRecipe={this.updateFavouriteRecipes}
-                            pullSearchClick={this.searchRecipes} />
-                        <MainComponent results={this.state.searchResults}
-                            ownedIngredients={this.props.user.getIngredients()}
-                            name={this.props.user.getName()}
-                            pullNewFavouriteRecipe={this.updateFavouriteRecipes}
-                            pullNewPastRecipe={this.updatePastRecipes} />
-                    </div>
-                </div>
-            </div>
-        </div>;
-    }
-
 }

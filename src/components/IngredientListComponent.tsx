@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 
 import Ingredient from "../ingredient";
 import Constants from "../constants";
@@ -7,7 +6,8 @@ import Constants from "../constants";
 import IngredientPopOverComponent from "./IngredientPopOverComponent";
 import { IIngredientListProps } from "./componentInterfaces";
 
-export default class IngredientListComponent extends React.Component<IIngredientListProps, {}> {
+export default class IngredientListComponent extends
+    React.Component<IIngredientListProps, {}> {
 
     constructor(props: IIngredientListProps) {
 
@@ -16,39 +16,7 @@ export default class IngredientListComponent extends React.Component<IIngredient
         this.handleRemoveIngredient = this.handleRemoveIngredient.bind(this);
     }
 
-    shouldComponentUpdate(nextProps: IIngredientListProps): boolean {
-
-        /*
-         * Following assumes that the user's ingredient and recipe arrays
-         * cannot change without having more or fewer items between snapshots.
-         */
-        if (this.props.ingredients.length !== nextProps.ingredients.length) {
-
-            return true;
-        }
-
-        return false;
-    }
-
-    handleAddIngredient(ingredient: Ingredient): void {
-
-        this.props.onClickAddIngredient(Constants.UPDATE_ADD, ingredient);
-    }
-
-    handleRemoveIngredient(e: any): void {
-
-        for (let ingredient of this.props.ingredients) {
-
-            if (e.target.name === ingredient.toString()) {
-
-                this.props.onClickRemoveIngredient(Constants.UPDATE_REMOVE, ingredient);
-
-                return;
-            }
-        }
-    }
-
-    render() {
+    public render() {
 
         let thisComponent = this;
         let ingredients = this.props.ingredients.map(function (ingredient) {
@@ -60,7 +28,9 @@ export default class IngredientListComponent extends React.Component<IIngredient
                     <div className="col-xs-2">
                         <button name={ingredient.toString()}
                             onClick={thisComponent.handleRemoveIngredient}
-                            className="btn btn-default btn-xs">-</button>
+                            className="btn btn-default btn-xs">
+                            <span className="glyphicon glyphicon-minus"></span>
+                        </button>
                     </div>
                 </div>
             </li>;
@@ -80,12 +50,47 @@ export default class IngredientListComponent extends React.Component<IIngredient
                 </div>
             </li> : null;
 
-        return <ul className="list-group">
-            <li className="list-group-item active">
-                <h4 className="list-group-item-heading">I have</h4>
-            </li>
-            {ingredients}
-            {addIngredientButton}
-        </ul>;
+        return <div className="panel panel-default">
+            <div className="panel-heading">
+                <h4>I have</h4>
+            </div>
+            <ul className="list-group">
+                {ingredients}
+                {addIngredientButton}
+            </ul>
+        </div>;
+    }
+
+    private shouldComponentUpdate(nextProps: IIngredientListProps): boolean {
+
+        /*
+         * Following assumes that the user's ingredient and recipe arrays
+         * cannot change without having more or fewer items between snapshots.
+         */
+        if (this.props.ingredients.length !== nextProps.ingredients.length) {
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private handleAddIngredient(ingredient: Ingredient): void {
+
+        this.props.onClickAddIngredient(Constants.UPDATE_ADD, ingredient);
+    }
+
+    private handleRemoveIngredient(e: any): void {
+
+        for (let ingredient of this.props.ingredients) {
+
+            if (e.target.name === ingredient.toString()) {
+
+                this.props.onClickRemoveIngredient(
+                    Constants.UPDATE_REMOVE, ingredient);
+
+                return;
+            }
+        }
     }
 }

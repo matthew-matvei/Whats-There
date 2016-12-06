@@ -5,12 +5,51 @@ body {
     padding-top: 70px;
 }
 
-.row.is-flex {
-    display: flex;
-    flex-wrap: wrap;
+
+/* Classes for adjusting glyphicon sizes. */
+
+.gi-xs {
+    font-size: 0.25em;
 }
 
-.row.is-flex>[class*='col-'] {
-    display: flex;
-    flex-direction: column;
+.gi-sm {
+    font-size: 0.5em;
+}
+
+.gi-md {
+    font-size: 1em;
+}
+
+.gi-lg {
+    font-size: 3em;
+}
+
+.gi-xl {
+    font-size: 6em;
+}
+
+.gi-xxl {
+    font-size: 10em;
+}
+
+
+/* Following handles spinning the animation whilst searching for recipes. */
+
+.glyphicon.spinning {
+    animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+    to {
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .modal-wide {
+        width: 80%;
+    }
 }

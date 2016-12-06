@@ -1,19 +1,18 @@
 /**
- * Interface describes the contents of a single search tuple as received /
- * entered to the Mashape DB.
+ * @interface Interface describes the contents of a single search tuple as received /
+ * entered to any DB.
  */
-export interface IMashapeDBSearch {
+export interface IDBSearch {
 
     ingredients: string;
     response: string;
-    image?: Blob;
 }
 
 /**
- * Interface describes the contents of a single recipe tuple as received /
- * entered to the Mashape DB.
+ * @interface Interface describes the contents of a single recipe tuple as received /
+ * entered to any DB.
  */
-export interface IMashapeDBRecipe {
+export interface IDBRecipe {
 
     recipeID: string;
     response: string;

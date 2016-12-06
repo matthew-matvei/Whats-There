@@ -1,11 +1,11 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 
 import { IWelcomeProps } from "./componentInterfaces";
 
-export default class WelcomeComponent extends React.Component<IWelcomeProps, {}> {
+export default class WelcomeComponent extends
+    React.Component<IWelcomeProps, {}> {
 
-    render() {
+    public render() {
 
         return <div className="col-xs-5">
             <p className="navbar-text navbar-right text-capitalize">

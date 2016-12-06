@@ -83,7 +83,7 @@ describe("Class Ingredient's", function () {
 
         it("returns the expected string", function () {
 
-            let expectedString = "10ml ingredient1";
+            let expectedString = "10 ml ingredient1";
             expect(ingredient.toString()).to.equal(expectedString);
         });
     });
@@ -95,24 +95,25 @@ describe("Class Ingredient's", function () {
             let ingredients = new Array<Ingredient>();
             ingredients.push(ingredient);
             let recipe = new Recipe("Recipe1", ingredients, "Method1",
-                new Array<string>(), "URL");
+                new Array<string>(), "IMG", "URL", 1, 1);
 
             expect(ingredient.equals(recipe)).to.be.false;
         });
 
-        it("returns false if other ingredient has a different name", function () {
+        it("returns false if other ingredient has different name", function () {
 
             let otherIngredient = new Ingredient("Ingredient2", 10, "ml");
 
             expect(ingredient.equals(otherIngredient)).to.be.false;
         });
 
-        it("returns false if other ingredient has a different volume", function () {
+        it("returns false if other ingredient has a different volume",
+            function () {
 
-            let otherIngredient = new Ingredient("Ingredient1", 20, "ml");
+                let otherIngredient = new Ingredient("Ingredient1", 20, "ml");
 
-            expect(ingredient.equals(otherIngredient)).to.be.false;
-        });
+                expect(ingredient.equals(otherIngredient)).to.be.false;
+            });
 
         it("returns false if other ingredient has a different volume type",
             function () {

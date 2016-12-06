@@ -1,17 +1,17 @@
+/// <reference path="../typings/globals/uuid/index.d.ts" />
+
 /** @author Matthew James <matthew.d.james87@gmail.com> */
 
 import Recipe from "./recipe";
 import Ingredient from "./ingredient";
 import Constants from "./constants";
 
-// DEBUG: causes issues with webpack
-// let uuid = require("uuid");
+let uuid = require("uuid");
 
 /**
  * Abstract class User stores basic user information. A User may be a registered
  * user or an unregistered user.
  *
- * @export
  * @abstract
  * @class User
  */
@@ -162,7 +162,8 @@ export abstract class User {
     public removeIngredient(ingredient: Ingredient): boolean {
 
         let index: number;
-        if ((index = this.ingredients.findIndex((i: Recipe) => i.equals(ingredient))) < 0) {
+        if ((index = this.ingredients.findIndex(
+            (i: Recipe) => i.equals(ingredient))) < 0) {
 
             return false;
 
@@ -217,7 +218,8 @@ export abstract class User {
         }
 
         let index: number;
-        if ((index = this.favRecipes.findIndex((i: Recipe) => i.equals(recipe))) < 0) {
+        if ((index = this.favRecipes.findIndex(
+            (i: Recipe) => i.equals(recipe))) < 0) {
 
             return false;
 
@@ -269,7 +271,8 @@ export abstract class User {
     public removePastRecipe(recipe: Recipe): boolean {
 
         let index: number;
-        if ((index = this.pastRecipes.findIndex((i: Recipe) => i.equals(recipe))) < 0) {
+        if ((index = this.pastRecipes.findIndex(
+            (i: Recipe) => i.equals(recipe))) < 0) {
 
             return false;
 
@@ -367,7 +370,7 @@ export abstract class User {
      */
     public getIngredientsAlphabetically(): string {
 
-        return this.getIngredients().map(function (ingredient) {
+        return this.getIngredients().map(function(ingredient) {
 
             return ingredient.getName();
 
@@ -478,12 +481,10 @@ export abstract class User {
     }
 }
 
-
 /**
  * @classdesc RegisteredUser stores infor about a user in the context of this
  * application.
  *
- * @export
  * @class RegisteredUser
  * @extends {User}
  */
@@ -498,37 +499,14 @@ export class RegisteredUser extends User {
      */
 
     // stores the user's public details
-    /**
-     *
-     *
-     * @private
-     * @type {Date}
-     * @memberOf RegisteredUser
-     */
     private dob: Date;  // TODO: consider if relevant
-    /**
-     *
-     *
-     * @private
-     * @type {string}
-     * @memberOf RegisteredUser
-     */
     private email: string;
-    /**
-     *
-     *
-     * @private
-     * @type {string}
-     * @memberOf RegisteredUser
-     */
     private favColour: string;  // used for colour scheme
 
     /**
      * Creates an instance of RegisteredUser.
      *
-     * @param {string} name
-     *
-     * @memberOf RegisteredUser
+     * @param name
      */
     constructor(name: string, ingredients: Array<Ingredient>,
         favRecipes: Array<Recipe>, pastRecipes: Array<Recipe>,
@@ -538,39 +516,30 @@ export class RegisteredUser extends User {
             new Array<Recipe>(), new Array<string>());
     }
 
-    /** Method gets the user's date of birth. */
     /**
+     * Method gets the user's date of birth.
      *
-     *
-     * @returns {Date}
-     *
-     * @memberOf RegisteredUser
+     * @return the user's DOB
      */
     public getDob(): Date {
 
         return new Date();
     }
 
-    /** Method gets the user's email. */
     /**
+     * Method gets the user's email.
      *
-     *
-     * @returns {string}
-     *
-     * @memberOf RegisteredUser
+     * @return the email address of the user
      */
     public getEmail(): string {
 
         return "";
     }
 
-    /** Method gets user's favourite colour. */
     /**
+     * Method gets user's favourite colour.
      *
-     *
-     * @returns {string}
-     *
-     * @memberOf RegisteredUser
+     * @return the user's favourite colour
      */
     public getFavColour(): string {
 
@@ -582,7 +551,6 @@ export class RegisteredUser extends User {
  * @classdesc UnregisteredUser stores info about a user in the context of this
  * application.
  *
- * @export
  * @class UnregisteredUser
  * @extends {User}
  */
@@ -592,7 +560,7 @@ export class UnregisteredUser extends User {
      * Class Invariant:
      *      super.checkInvariant() === true
      *  &&  this.name === "user"
-     *  &&  this.id !== "" && this.id is a globally unique ID for the DB
+     *  &&  this.id && this.id is a globally unique ID for the DB
      */
 
     // since this user type has no unique email, they require a unique id
@@ -611,24 +579,24 @@ export class UnregisteredUser extends User {
             new Array<Recipe>(), new Array<string>());
 
         // any unregistered user must have a UUID
-        // this.id = uuid.v1();
+        this.id = uuid.v1();
     }
 
     /**
+     * Method returns the user's UUID.
      *
-     *
-     * @return
+     * @return the user's ID
      */
     public getId(): string {
 
-        return "";
+        return this.id;
     }
 
     /**
      * Method checks the class invariant. This is intended to be used
      * for debugging and testing only.
      *
-     * @return
+     * @return whether the class' invariant holds or not
      */
     public checkInvariant(): boolean {
 
@@ -638,6 +606,11 @@ export class UnregisteredUser extends User {
         }
 
         if (this.getName() !== "user") {
+
+            return false;
+        }
+
+        if (!this.id) {
 
             return false;
         }

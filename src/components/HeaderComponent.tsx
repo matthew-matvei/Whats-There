@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 
 import WelcomeComponent from "./WelcomeComponent";
 import { IHeaderProps } from "./componentInterfaces";
@@ -8,17 +7,7 @@ import { IHeaderProps } from "./componentInterfaces";
 
 export default class HeaderComponent extends React.Component<IHeaderProps, {}> {
 
-    shouldComponentUpdate(nextProps: IHeaderProps): boolean {
-
-        if (this.props.name === nextProps.name) {
-
-            return false;
-        }
-
-        return true;
-    }
-
-    render() {
+    public render() {
 
         return <nav className="navbar navbar-default navbar-fixed-top col-xs-12"
             role="navigation">
@@ -27,5 +16,15 @@ export default class HeaderComponent extends React.Component<IHeaderProps, {}> {
             </div>
             <WelcomeComponent name={this.props.name} />
         </nav>;
+    }
+
+    private shouldComponentUpdate(nextProps: IHeaderProps): boolean {
+
+        if (this.props.name === nextProps.name) {
+
+            return false;
+        }
+
+        return true;
     }
 }

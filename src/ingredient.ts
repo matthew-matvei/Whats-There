@@ -12,7 +12,7 @@ export default class Ingredient {
     /*
      * Class Invariant:
      *      this.name !== "" && this.name !== undefined
-     *  &&  this.volume > 0 && this.volume !== undefined
+     *  &&  this.volume >= 0 && this.volume !== undefined
      *  &&  this.volume rounded down to 2 decimal places
      *  &&  this.volumeType !== undefined
      */
@@ -32,7 +32,7 @@ export default class Ingredient {
 
             throw new TypeError("Ingredient name must be defined");
 
-        } else if (!volume) {
+        } else if (volume === null || volume === undefined) {
 
             throw new TypeError("Volume must be defined");
 
@@ -96,10 +96,20 @@ export default class Ingredient {
      */
     public toString(): string {
 
-        return this.volume.toString() + this.volumeType + " " +
-            this.name;
+        /*
+         * If volume is anything more than zero, volume and volumeType are
+         * returned. Otherwise, returns only the name.
+         */
+        return this.volume > 0 ? this.volume.toString() + " " + this.volumeType
+            + " " + this.name : this.name;
     }
 
+    /**
+     * Method returns a JSON representation of this ingredient, used for
+     * serialising recipes (including ingredients) across a network.
+     *
+     * @return a JSON-formatted string describing this ingredient
+     */
     public toJSON(): string {
 
         return JSON.stringify(<IIngredientAsJSON>{

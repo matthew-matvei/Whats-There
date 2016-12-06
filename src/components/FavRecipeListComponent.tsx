@@ -1,11 +1,11 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 
 import Constants from "../constants";
 
 import { IFavRecipeListProps } from "./componentInterfaces";
 
-export default class FavRecipeListComponent extends React.Component<IFavRecipeListProps, {}> {
+export default class FavRecipeListComponent extends
+    React.Component<IFavRecipeListProps, {}> {
 
     constructor(props: IFavRecipeListProps) {
 
@@ -14,20 +14,7 @@ export default class FavRecipeListComponent extends React.Component<IFavRecipeLi
         this.handleRemoveFavRecipe = this.handleRemoveFavRecipe.bind(this);
     }
 
-    handleRemoveFavRecipe(e: any): void {
-
-        for (let recipe of this.props.recipes) {
-
-            if (e.target.name === recipe.hashCode().toString()) {
-
-                this.props.onClickRemoveFavRecipe(Constants.UPDATE_REMOVE, recipe);
-
-                return;
-            }
-        }
-    }
-
-    render() {
+    public render() {
 
         let thisComponent = this;
         let recipes = this.props.recipes.length === 0 ?
@@ -47,17 +34,32 @@ export default class FavRecipeListComponent extends React.Component<IFavRecipeLi
                         <div className="col-xs-2">
                             <button className="btn btn-default btn-xs"
                                 name={listItem.hashCode().toString()}
-                                onClick={thisComponent.handleRemoveFavRecipe}>-</button>
+                                onClick={thisComponent.handleRemoveFavRecipe}>-
+                            </button>
                         </div>
                     </div>
                 </li>;
             });
 
-        return <ul className="list-group">
-            <li className="list-group-item active">
-                <h4 className="list-group-item-heading">Fav recipes</h4>
-            </li>
+        return <div className="panel panel-default">
+            <div className="panel-heading">
+                <h4>Fav recipes</h4>
+            </div>
             {recipes}
-        </ul>;
+        </div>;
+    }
+
+    private handleRemoveFavRecipe(e: any): void {
+
+        for (let recipe of this.props.recipes) {
+
+            if (e.target.name === recipe.hashCode().toString()) {
+
+                this.props.onClickRemoveFavRecipe(
+                    Constants.UPDATE_REMOVE, recipe);
+
+                return;
+            }
+        }
     }
 }

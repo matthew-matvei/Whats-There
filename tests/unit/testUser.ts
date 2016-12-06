@@ -5,9 +5,7 @@ import Recipe from "../../src/recipe";
 import Ingredient from "../../src/ingredient";
 import Constants from "../../src/constants";
 
-// TODO: why no intellisense with this?
 let expect = require("chai").expect;
-let assert = require("chai").assert;
 
 /** Test suite checks functionality defined in '../../src/user' */
 describe("Class UnregisteredUser's", function () {
@@ -33,12 +31,12 @@ describe("Class UnregisteredUser's", function () {
         testIngredient1 = new Ingredient("Ingredient1", 10, "ml");
         testIngredient2 = new Ingredient("Ingredient2", 20, "mg");
         recipe = new Recipe("Recipe1", [testIngredient1],
-            "Method", new Array<string>(), "URL");
+            "Method", new Array<string>(), "IMG", "URL", 1, 1);
 
         testIngredient3 = new Ingredient("Ingredient3", 30, "ml");
         testIngredient4 = new Ingredient("Ingredient4", 40, "mg");
         recipe2 = new Recipe("Recipe2", [testIngredient3], "Method2",
-            new Array<string>(), "URL");
+            new Array<string>(), "IMG", "URL", 1, 1);
 
         testAllergy1 = "Allergy1";
         testAllergy2 = "Allergy2";
@@ -98,7 +96,8 @@ describe("Class UnregisteredUser's", function () {
             unexpectedIngredients.push(testIngredient1);
 
             expect(user.getIngredients()).to.deep.equal(expectedIngredients);
-            expect(user.getIngredients()).to.not.deep.equal(unexpectedIngredients);
+            expect(user.getIngredients())
+                .to.not.deep.equal(unexpectedIngredients);
         });
 
         it("adds the ingredient to the end of the list", function () {
@@ -177,9 +176,11 @@ describe("Class UnregisteredUser's", function () {
         it("adds favourite recipe when current number of recipes is " +
             "(Constants.MAX_FAV_RECIPE - 1)", function () {
 
-                let recipesToAdd = buildRecipeList(Constants.MAX_FAV_RECIPES - 1);
+                let recipesToAdd = buildRecipeList(
+                    Constants.MAX_FAV_RECIPES - 1);
                 let finalRecipe = new Recipe("Recipe10",
-                    [new Ingredient("Ingredient10", 100, "ml")], "Method1", new Array<string>(), "URL");
+                    [new Ingredient("Ingredient10", 100, "ml")], "Method1",
+                    new Array<string>(), "IMG", "URL", 1, 1);
 
                 expectedRecipes = expectedRecipes.concat(recipesToAdd);
                 expectedRecipes.push(finalRecipe);
@@ -214,10 +215,11 @@ describe("Class UnregisteredUser's", function () {
             expect(user.getFavRecipes()).to.not.include(recipe);
         });
 
-        it("returns false when given recipe does not exist in list", function () {
+        it("returns false when given recipe isn't in list", function () {
 
-            let recipeToRemove = new Recipe("Recipe2", [new Ingredient("Ingredient2", 20, "ml")],
-                "Method", new Array<string>(), "URL");
+            let recipeToRemove = new Recipe("Recipe2",
+                [new Ingredient("Ingredient2", 20, "ml")], "Method",
+                new Array<string>(), "IMG", "URL", 1, 1);
 
             user.addFavRecipe(recipe);
             user.addFavRecipe(recipe);
@@ -253,9 +255,11 @@ describe("Class UnregisteredUser's", function () {
         it("adds past recipe when current number of recipes is " +
             "(Constants.MAX_PAST_RECIPE - 1)", function () {
 
-                let recipesToAdd = buildRecipeList(Constants.MAX_PAST_RECIPES - 1);
-                let finalRecipe = new Recipe("Recipe10", [new Ingredient("Ingredient10", 100, "ml")],
-                    "Method", new Array<string>(), "URL");
+                let recipesToAdd = buildRecipeList(
+                    Constants.MAX_PAST_RECIPES - 1);
+                let finalRecipe = new Recipe("Recipe10",
+                    [new Ingredient("Ingredient10", 100, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1);
 
                 expectedRecipes = expectedRecipes.concat(recipesToAdd);
                 expectedRecipes.push(finalRecipe);
@@ -274,8 +278,9 @@ describe("Class UnregisteredUser's", function () {
             "Constants.MAX_FAV_RECIPE", function () {
 
                 let recipesToAdd = buildRecipeList(Constants.MAX_FAV_RECIPES);
-                let finalRecipe = new Recipe("Recipe11", [new Ingredient("Ingredient11", 110, "ml")],
-                    "Method", new Array<string>(), "URL");
+                let finalRecipe = new Recipe("Recipe11",
+                    [new Ingredient("Ingredient11", 110, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1);
 
                 expectedRecipes = expectedRecipes.concat(recipesToAdd);
                 for (let recipe of recipesToAdd) {
@@ -294,8 +299,9 @@ describe("Class UnregisteredUser's", function () {
         it("adds past recipe to the beginning of the list of past " +
             "recipes", function () {
 
-                let anotherRecipe = new Recipe("Recipe2", [new Ingredient("Ingredient2", 20, "ml")],
-                    "Method", new Array<string>(), "URL");
+                let anotherRecipe = new Recipe("Recipe2",
+                    [new Ingredient("Ingredient2", 20, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1);
 
                 // order is reversed since Array.push() adds to end of array
                 expectedRecipes.push(anotherRecipe);
@@ -312,29 +318,40 @@ describe("Class UnregisteredUser's", function () {
 
                 // buildRecipeList() function unsuitable here due to ordering
                 let recipesToAdd = new Array<Recipe>();
-                let pushedOutRecipe = new Recipe("Recipe1", [new Ingredient("Ingredient1", 10, "ml")],
-                    "Method", new Array<string>(), "URL");
+                let pushedOutRecipe = new Recipe("Recipe1",
+                    [new Ingredient("Ingredient1", 10, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1);
                 recipesToAdd.push(pushedOutRecipe);
-                recipesToAdd.push(new Recipe("Recipe2", [new Ingredient("Ingredient2", 20, "ml")],
-                    "Method", new Array<string>(), "URL"));
-                recipesToAdd.push(new Recipe("Recipe3", [new Ingredient("Ingredient3", 30, "ml")],
-                    "Method", new Array<string>(), "URL"));
-                recipesToAdd.push(new Recipe("Recipe4", [new Ingredient("Ingredient4", 40, "ml")],
-                    "Method", new Array<string>(), "URL"));
-                recipesToAdd.push(new Recipe("Recipe5", [new Ingredient("Ingredient5", 50, "ml")],
-                    "Method", new Array<string>(), "URL"));
-                recipesToAdd.push(new Recipe("Recipe6", [new Ingredient("Ingredient6", 60, "ml")],
-                    "Method", new Array<string>(), "URL"));
-                recipesToAdd.push(new Recipe("Recipe7", [new Ingredient("Ingredient7", 70, "ml")],
-                    "Method", new Array<string>(), "URL"));
-                recipesToAdd.push(new Recipe("Recipe8", [new Ingredient("Ingredient8", 80, "ml")],
-                    "Method", new Array<string>(), "URL"));
-                recipesToAdd.push(new Recipe("Recipe9", [new Ingredient("Ingredient9", 90, "ml")],
-                    "Method", new Array<string>(), "URL"));
-                recipesToAdd.push(new Recipe("Recipe10", [new Ingredient("Ingredient10", 100, "ml")],
-                    "Method", new Array<string>(), "URL"));
-                let finalRecipe = new Recipe("Recipe11", [new Ingredient("Ingredient11", 110, "ml")],
-                    "Method", new Array<string>(), "URL");
+                recipesToAdd.push(new Recipe("Recipe2",
+                    [new Ingredient("Ingredient2", 20, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1));
+                recipesToAdd.push(new Recipe("Recipe3",
+                    [new Ingredient("Ingredient3", 30, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1));
+                recipesToAdd.push(new Recipe("Recipe4",
+                    [new Ingredient("Ingredient4", 40, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1));
+                recipesToAdd.push(new Recipe("Recipe5",
+                    [new Ingredient("Ingredient5", 50, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1));
+                recipesToAdd.push(new Recipe("Recipe6",
+                    [new Ingredient("Ingredient6", 60, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1));
+                recipesToAdd.push(new Recipe("Recipe7",
+                    [new Ingredient("Ingredient7", 70, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1));
+                recipesToAdd.push(new Recipe("Recipe8",
+                    [new Ingredient("Ingredient8", 80, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1));
+                recipesToAdd.push(new Recipe("Recipe9",
+                    [new Ingredient("Ingredient9", 90, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1));
+                recipesToAdd.push(new Recipe("Recipe10",
+                    [new Ingredient("Ingredient10", 100, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1));
+                let finalRecipe = new Recipe("Recipe11",
+                    [new Ingredient("Ingredient11", 110, "ml")], "Method",
+                    new Array<string>(), "IMG", "URL", 1, 1);
 
                 for (let recipe of recipesToAdd) {
 
@@ -367,10 +384,11 @@ describe("Class UnregisteredUser's", function () {
             expect(user.getPastRecipes()).to.not.include(recipe);
         });
 
-        it("returns false when given recipe does not exist in list", function () {
+        it("returns false when given recipe isn't in list", function () {
 
-            let recipeToRemove = new Recipe("Recipe2", [new Ingredient("Ingredient2", 20, "ml")],
-                "Method", new Array<string>(), "URL");
+            let recipeToRemove = new Recipe("Recipe2",
+                [new Ingredient("Ingredient2", 20, "ml")], "Method",
+                new Array<string>(), "IMG", "URL", 1, 1);
 
             user.addPastRecipe(recipe);
 
@@ -491,7 +509,8 @@ describe("Class UnregisteredUser's", function () {
 
         it("returns a list of no ingredients", function () {
 
-            expect(user.getIngredients()).to.deep.equal(new Array<Ingredient>());
+            expect(user.getIngredients())
+                .to.deep.equal(new Array<Ingredient>());
         });
 
         it("does not expose the original list of ingredients", function () {
@@ -515,7 +534,8 @@ describe("Class UnregisteredUser's", function () {
             let notExpected = "Ingredient1,Ingredient2";
 
             expect(user.getIngredientsAlphabetically()).to.equal(expected);
-            expect(user.getIngredientsAlphabetically()).to.not.equal(notExpected);
+            expect(user.getIngredientsAlphabetically())
+                .to.not.equal(notExpected);
         });
 
         it("returns an alphabetically sorted list of ingredients", function () {
@@ -657,32 +677,49 @@ describe("Class UnregisteredUser's", function () {
             expect(user.canAddFavRecipe()).to.be.true;
         });
 
-        it("returns true when list of fav recipes is of length one", function () {
+        it("returns true when length of fav recipes is one", function () {
 
             user.addFavRecipe(recipe);
 
             expect(user.canAddFavRecipe()).to.be.true;
         });
 
-        it("returns true when list of fav recipes is of length two", function () {
+        it("returns true when length of fav recipes is two", function () {
 
             user.addFavRecipe(recipe);
-            user.addFavRecipe(new Recipe("Recipe2", [new Ingredient("Ingredient2", 20, "ml")],
-                "Method", new Array<string>(), "URL"));
+            user.addFavRecipe(new Recipe("Recipe2",
+                [new Ingredient("Ingredient2", 20, "ml")], "Method",
+                new Array<string>(), "IMG", "URL", 1, 1));
 
             expect(user.canAddFavRecipe()).to.be.true;
         });
 
-        it("returns false when list of fav recipes is of length " + "Constants.MAX_FAV_RECIPES", function () {
+        it("returns false when list of fav recipes is of length " +
+            "Constants.MAX_FAV_RECIPES", function () {
 
-            let recipes = buildRecipeList(Constants.MAX_FAV_RECIPES);
+                let recipes = buildRecipeList(Constants.MAX_FAV_RECIPES);
 
-            for (let recipe of recipes) {
+                for (let recipe of recipes) {
 
-                user.addFavRecipe(recipe);
-            }
+                    user.addFavRecipe(recipe);
+                }
 
-            expect(user.canAddFavRecipe()).to.be.false;
+                expect(user.canAddFavRecipe()).to.be.false;
+            });
+    });
+
+    describe("getId() method", function () {
+
+        it("returns a UUID", function () {
+
+            expect(user.getId());
+        });
+
+        it("returns different UUIDs for different user objects", function () {
+
+            let otherUser = new UnregisteredUser();
+
+            expect(user.getId()).to.not.equal(otherUser.getId());
         });
     });
 });
@@ -714,7 +751,11 @@ function buildRecipeList(numberOfRecipes: number): Array<Recipe> {
     for (let i = 0; i < numberOfRecipes; i++) {
 
         recipesToAdd.push(new Recipe("Recipe" + (i + 1).toString(),
-            [new Ingredient("Ingredient" + (i + 1).toString(), 10 * (i + 1), "ml")], "Method" + (i + 1).toString(), new Array<string>(), "URL"));
+            [new Ingredient("Ingredient" + (i + 1).toString(),
+                10 * (i + 1),
+                "ml")],
+            "Method" + (i + 1).toString(),
+            new Array<string>(), "IMG", "URL", 1, 1));
     }
 
     return recipesToAdd;

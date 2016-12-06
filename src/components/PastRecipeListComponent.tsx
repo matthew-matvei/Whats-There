@@ -1,11 +1,11 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 
-import { IRecipeListProps } from "./componentInterfaces";
+import { IPastRecipeListProps } from "./componentInterfaces";
 
-export default class RecipeListComponent extends React.Component<IRecipeListProps, {}> {
+export default class RecipeListComponent extends
+    React.Component<IPastRecipeListProps, {}> {
 
-    render() {
+    public render() {
 
         let recipes = this.props.recipes.length === 0 ?
             <li className="list-group-item">
@@ -24,11 +24,11 @@ export default class RecipeListComponent extends React.Component<IRecipeListProp
                 </li>;
             });
 
-        return <ul className="list-group">
-            <li className="list-group-item active">
-                <h4 className="list-group-item-heading">Past recipes</h4>
-            </li>
+        return <div className="panel panel-default">
+            <div className="panel-heading">
+                <h4>Past recipes</h4>
+            </div>
             {recipes}
-        </ul>;
+        </div>;
     }
 }

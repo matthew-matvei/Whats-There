@@ -1,23 +1,29 @@
 /** @author Matthew James <matthew.d.james87@gmail.com> */
 
-import $ = require("jquery");
 import Q = require("q");
 
 import { Database } from "../db/database";
 import Recipe from "../recipe";
 import Ingredient from "../ingredient";
 import { ICallOptions } from "./callOptions";
-import { IMashapeRecipe, IMashapeSearchItem } from "./recipeInterfaces";
+import {
+    IMashapeRecipe, IYummlyRecipe, IFoodToForkRecipe, IFoodToForkSearch,
+    IYummlySearch, IFoodToForkSearchItem, IMashapeSearchItem, IYummlySearchItem,
+    IResponse
+} from "./callerInterfaces";
+import CallerUtils from "./callerUtils";
 import Constants from "../constants";
 
 let qs = require("querystring");
 let uniRest = require("unirest");
 
+// TODO: consider making interface an abstract class, in order to reduced repeated code in sub-classes' call() and get() methods
+
 /**
- * @interface Interface defines the API caller, which other API classes that handle
- * specific site communication implement.
+ * @interface Interface defines the API caller, which other API classes that
+ * handle specific site communication implement.
  */
-interface Caller {
+interface ICaller {
 
     /**
      * Primary method of any Caller derived class, it handles everything from
@@ -97,41 +103,126 @@ interface Caller {
 
 /**
  * @classdesc Class handles making API calls to Food2Fork.
- * @implements Caller
+ * @implements ICaller
  */
-export class FoodToForkCaller implements Caller {
+export class FoodToForkCaller implements ICaller {
 
-	/*
+    /*
 	 * NOTE: FOLLOWING API REQUIRED FOR FoodToFork API
 	 */
 
     private readonly API_KEY = "";
+    private readonly MASHAPE_KEY = "";
 
     /** @inheritdoc */
     public call(userOptions: ICallOptions): Promise<Array<Recipe>> {
 
+        // since 'this' loses scope inside the Promise, we store it here
+        let thisCaller = this;
+
         return new Promise<Array<Recipe>>(function (resolve, reject) {
 
-            let queryString = this.buildSearchString(userOptions);
+            /*
+             * Initially attempts to fetch a response using given userOptions
+             * from the DB. If this succeeds, the recipes referred to in the
+             * response are fetched. If it fails, Mashape API is contacted.
+             */
+            let db = new Database();
+            db.fetchSearchResponse(Constants.DB_FOOD_TO_FORK,
+                userOptions.ingredients)
+                .then(function (response) {
 
-            $.get(queryString).done(function (searchResults) {
+                    let recipes = new Array<Promise<Recipe>>();
+                    let recipeIDs = thisCaller.extractRecipes(response);
+                    for (let id of recipeIDs) {
 
-                // handle succeeding to retrieve recipes
-                resolve(searchResults);
+                        recipes.push(thisCaller.get(id));
+                    }
 
-            }).fail(function (error) {
+                    /*
+                     * Following is executed once all promises in recipes array
+                     * are fulfilled. Note: those promises may either be
+                     * resolved or rejected.
+                     */
+                    Q.all(recipes).then(function (recipesArray) {
 
-                // handle failing to retrieve recipes
-            });
+                        resolve(recipesArray);
+                    });
+                })
+                .catch(function (error) {
+
+                    // during dev, this warns that a cached version was not used
+                    console.log(error);
+
+                    // unirest is used to communicate with Mashape API
+                    uniRest.get(thisCaller.buildSearchString(userOptions))
+                        .header("X-Mashape-Key", thisCaller.MASHAPE_KEY)
+                        .header("Accept", "application/json")
+                        .end(function (result: IResponse) {
+
+                            db.storeSearchResponse(Constants.DB_FOOD_TO_FORK,
+                                userOptions.ingredients,
+                                JSON.stringify(result.body));
+
+                            let recipes = new Array<Promise<Recipe>>();
+                            let recipeIDs = thisCaller.extractRecipes(
+                                JSON.stringify(result.body));
+                            for (let id of recipeIDs) {
+
+                                recipes.push(thisCaller.get(id));
+                            }
+
+                            /*
+                             * Following is executed once all promises in
+                             * recipes array are fulfilled. Note: those promises
+                             * may either be resolved or rejected.
+                             */
+                            Q.all(recipes).then(function (recipesArray) {
+
+                                resolve(recipesArray);
+                            });
+                        });
+                });
         });
     }
 
     /** @inheritdoc */
     public get(recipeID: string): Promise<Recipe> {
 
+        // since 'this' loses scope inside the Promise, we store it here
+        let thisCaller = this;
+
         return new Promise<Recipe>(function (resolve, reject) {
 
+            /*
+             * Initially attempts to fetch a response using given recipeID
+             * from the DB. If this succeeds, the recipes referred to in the
+             * response are fetched. If it fails, Mashape API is contacted.
+             */
+            let db = new Database();
+            db.fetchRecipeResponse(Constants.DB_FOOD_TO_FORK, recipeID)
+                .then(function (response) {
 
+                    resolve(thisCaller.buildRecipe(response));
+                })
+                .catch(function (error) {
+
+                    // during dev, this warns that a cached version was not used
+                    console.log(error);
+
+                    // unirest is used to communicate with Mashape API
+                    uniRest.get(thisCaller.buildGetString(recipeID))
+                        .header("X-Mashape-Key", thisCaller.MASHAPE_KEY)
+                        .header("Accept", "application/json")
+                        .end(function (result: IResponse) {
+
+                            db.storeRecipeResponse(Constants.DB_FOOD_TO_FORK,
+                                recipeID, JSON.stringify(result.body));
+
+                            resolve(thisCaller.buildRecipe(
+                                JSON.stringify(result.body)));
+                        });
+                });
         });
     }
 
@@ -157,30 +248,70 @@ export class FoodToForkCaller implements Caller {
             rId: recipeID
         });
 
-        return Constants.F2F_URL + Constants.F2F_GET_RECIPE_PATH + "?" + parameters;
+        return Constants.F2F_URL + Constants.F2F_GET_RECIPE_PATH + "?" +
+            parameters;
     }
 
     /** @inheritdoc */
     public buildRecipe(response: string): Recipe {
 
-        return new Recipe("Recipe1", [new Ingredient("Ingredient1", 10, "ml")], "", new Array<string>(), "");
+        /*
+         * Note: response becomes 'double-escaped', likely due to FoodToFork's
+         * response.body already being JSON.stringified. Therefore, this is
+         * handled here by parsing twice.
+         */
+        let responseAsJSON = <IFoodToForkRecipe>JSON.parse(
+            JSON.parse(response));
+
+        let name = responseAsJSON.recipe.title;
+
+        // TODO: handle ingredient lines similarly to in Yummly
+        let ingredients = responseAsJSON.recipe.ingredients
+            .map(function (ingredient) {
+
+                let ingredientVolume = CallerUtils
+                    .getIngredientVolume(ingredient);
+                let ingredientName = CallerUtils.getIngredientName(ingredient);
+
+                if (ingredientVolume > 0) {
+
+                    return new Ingredient(ingredientName, ingredientVolume, "");
+
+                } else {
+
+                    return new Ingredient(ingredientName, 0, "");
+                }
+            });
+        let image = responseAsJSON.recipe.image_url;
+        let source = responseAsJSON.recipe.source_url;
+
+        // note: F2F API returns no servings or timeToMake information
+        return new Recipe(name, ingredients, "", new Array<string>(), image,
+            source, 0, 0);
     }
 
     /** @inheritdoc */
     public extractRecipes(response: string): Array<string> {
 
-        return new Array<string>();
+        let result = new Array<string>();
+
+        /*
+         * Note: response becomes 'double-escaped', likely due to FoodToFork's
+         * response.body already being JSON.stringified. Therefore, this is
+         * handled here by parsing twice.
+         */
+        for (let recipe of (JSON.parse(JSON.parse(response)) as
+            IFoodToForkSearch).recipes) {
+
+            result.push((<IFoodToForkSearchItem>recipe).recipe_id);
+        }
+
+        return result;
     }
 }
 
 /** @classdesc Class handles making API calls to Edamam. */
-export class EdamamCaller implements Caller {
-
-	/*
-	 * NOTE: FOLLOWING API REQUIRED FOR Edamam API
-	 */
-
-    private readonly API_KEY = "";
+export class EdamamCaller implements ICaller {
 
     /** @inheritdoc */
     public call(userOptions: ICallOptions): Promise<Array<Recipe>> {
@@ -195,7 +326,6 @@ export class EdamamCaller implements Caller {
     public get(recipeID: string): Promise<Recipe> {
 
         return new Promise<Recipe>(function (resolve, reject) {
-
 
         });
     }
@@ -215,7 +345,8 @@ export class EdamamCaller implements Caller {
     /** @inheritdoc */
     public buildRecipe(response: string): Recipe {
 
-        return new Recipe("Recipe1", [new Ingredient("Ingredient1", 10, "ml")], "", new Array<string>(), "");
+        return new Recipe("Recipe1", [new Ingredient("Ingredient1", 10, "ml")],
+            "", new Array<string>(), "IMG", "URL", 1, 1);
     }
 
     /** @inheritdoc */
@@ -226,9 +357,9 @@ export class EdamamCaller implements Caller {
 }
 
 /** @classdesc Class handles making API calls to Mashape Spoonacular */
-export class MashapeCaller implements Caller {
+export class MashapeCaller implements ICaller {
 
-	/*
+    /*
 	 * NOTE: FOLLOWING API REQUIRED FOR Mashape API
 	 */
 
@@ -243,8 +374,6 @@ export class MashapeCaller implements Caller {
         let thisCaller = this;
 
         return new Promise<Array<Recipe>>(function (resolve, reject) {
-
-            // TODO: abstract out / improve the following repetitive code
 
             /*
              * Initially attempts to fetch a response using given userOptions
@@ -275,28 +404,31 @@ export class MashapeCaller implements Caller {
                 })
                 .catch(function (error) {
 
-                    // during development, this warns that a cached version was not used
+                    // during dev, this warns that a cached version was not used
                     console.log(error);
 
                     // unirest is used to communicate with Mashape API
                     uniRest.get(thisCaller.buildSearchString(userOptions))
                         .header("X-Mashape-Key", thisCaller.API_KEY)
                         .header("Accept", "application/json")
-                        .end(function (result: any) {
+                        .end(function (result: IResponse) {
 
-                            db.storeSearchResponse(Constants.DB_MASHAPE, userOptions.ingredients, JSON.stringify(result.body));
+                            db.storeSearchResponse(Constants.DB_MASHAPE,
+                                userOptions.ingredients,
+                                JSON.stringify(result.body));
 
                             let recipes = new Array<Promise<Recipe>>();
-                            let recipeIDs = thisCaller.extractRecipes(JSON.stringify(result.body));
+                            let recipeIDs = thisCaller.extractRecipes(
+                                JSON.stringify(result.body));
                             for (let id of recipeIDs) {
 
                                 recipes.push(thisCaller.get(id));
                             }
 
                             /*
-                             * Following is executed once all promises in recipes array
-                             * are fulfilled. Note: those promises may either be
-                             * resolved or rejected.
+                             * Following is executed once all promises in
+                             * recipes array are fulfilled. Note: those promises
+                             * may either be resolved or rejected.
                              */
                             Q.all(recipes).then(function (recipesArray) {
 
@@ -328,28 +460,20 @@ export class MashapeCaller implements Caller {
                 })
                 .catch(function (error) {
 
-                    // during development, this warns that a cached version was not used
+                    // during dev, this warns that a cached version was not used
                     console.log(error);
 
                     // unirest is used to communicate with Mashape API
                     uniRest.get(thisCaller.buildGetString(recipeID))
                         .header("X-Mashape-Key", thisCaller.API_KEY)
                         .header("Accept", "application/json")
-                        .end(function (result: any) {
-
-                            // TODO: not entirely sure about following. It may also be moved elsewhere
-                            /*
-                            let isAsync = false;  // should be okay since this is in Promise
-                            let xhr = new XMLHttpRequest();
-                            xhr.open("GET", result.image, isAsync);
-                            xhr.responseType = "blob";
-                            xhr.send();
-                            */
+                        .end(function (result: IResponse) {
 
                             db.storeRecipeResponse(Constants.DB_MASHAPE,
-                                recipeID, JSON.stringify(result.body), null);
+                                recipeID, JSON.stringify(result.body));
 
-                            resolve(thisCaller.buildRecipe(JSON.stringify(result.body)));
+                            resolve(thisCaller.buildRecipe(
+                                JSON.stringify(result.body)));
                         });
                 });
         });
@@ -358,8 +482,6 @@ export class MashapeCaller implements Caller {
     /** @inheritdoc */
     public buildSearchString(userOptions: ICallOptions): string {
 
-        // TODO: consider checking ingredients !== ""
-
         // 'querystring' module interprets userOptions to URL-friendly string
         let parameters = qs.stringify({
 
@@ -367,9 +489,10 @@ export class MashapeCaller implements Caller {
 
             // the only parameter essential to this API call
             ingredients: userOptions.ingredients,
+
             limitLicense: false,
-            number: 5,
-            ranking: 1
+            number: Constants.MASHAPE_RESULT_LIMIT,
+            ranking: Constants.MASHAPE_MIN_MISSING
         });
 
         return Constants.MASHAPE_URL +
@@ -393,6 +516,7 @@ export class MashapeCaller implements Caller {
         let ingredients = responseAsJSON.extendedIngredients;
         let method = responseAsJSON.instructions;
         let allergens = new Array<string>(); // no allergens available
+        let image = responseAsJSON.image;
         let source = responseAsJSON.sourceUrl;
 
         let ingredientsArray = new Array<Ingredient>();
@@ -402,8 +526,11 @@ export class MashapeCaller implements Caller {
                 ingredient.amount, ingredient.unit));
         }
 
+        let servings = responseAsJSON.servings;
+        let timeToMake = responseAsJSON.readyInMinutes * 60;
+
         return new Recipe(name, ingredientsArray, method,
-            new Array<string>(), source);
+            allergens, image, source, servings, timeToMake);
     }
 
     /** @inheritdoc */
@@ -419,40 +546,138 @@ export class MashapeCaller implements Caller {
     }
 }
 
-export class YummlyCaller implements Caller {
+/**
+ * @classdesc Class handles making API calls to Yummly.
+ */
+export class YummlyCaller implements ICaller {
 
-	/*
-	 * NOTE: FOLLOWING API REQUIRED FOR FoodToFork API
+    /*
+	 * NOTE: FOLLOWING API REQUIRED FOR YummlyCaller API
 	 */
 
-	private readonly API_KEY = "";
+    private readonly API_ID = "";
+
+    private readonly API_KEY = "";
 
     /** @inheritdoc */
     public call(userOptions: ICallOptions): Promise<Array<Recipe>> {
 
+        // since 'this' loses scope inside the Promise, we store it here
+        let thisCaller = this;
+
         return new Promise<Array<Recipe>>(function (resolve, reject) {
 
+            /*
+             * Initially attempts to fetch a response using given userOptions
+             * from the DB. If this succeeds, the recipes referred to in the
+             * response are fetched. If it fails, Yummly API is contacted.
+             */
+            let db = new Database();
+            db.fetchSearchResponse(Constants.DB_YUMMLY, userOptions.ingredients)
+                .then(function (response) {
+
+                    let recipes = new Array<Promise<Recipe>>();
+                    let recipeIDs = thisCaller.extractRecipes(response);
+                    for (let id of recipeIDs) {
+
+                        recipes.push(thisCaller.get(id));
+                    }
+
+                    /*
+                     * Following is executed once all promises in recipes array
+                     * are fulfilled. Note: those promises may either be
+                     * resolved or rejected.
+                     */
+                    Q.all(recipes).then(function (recipesArray) {
+
+                        resolve(recipesArray);
+                    });
+                })
+                .catch(function (error) {
+
+                    // during dev, this warns that a cached version was not used
+                    console.log(error);
+
+                    uniRest.get(thisCaller.buildSearchString(userOptions))
+                        .header("X-Yummly-App-ID", thisCaller.API_ID)
+                        .header("X-Yummly-App-Key", thisCaller.API_KEY)
+                        .header("Accept", "application/json")
+                        .end(function (result: IResponse) {
+
+                            db.storeSearchResponse(Constants.DB_YUMMLY,
+                                userOptions.ingredients,
+                                JSON.stringify(result.body));
+
+                            let recipes = new Array<Promise<Recipe>>();
+                            let recipeIDs = thisCaller.extractRecipes(
+                                JSON.stringify(result.body));
+
+                            for (let id of recipeIDs) {
+
+                                recipes.push(thisCaller.get(id));
+                            }
+
+                            /*
+                             * Following is executed once all promises in
+                             * recipes array are fulfilled. Note: those promises
+                             * may either be resolved or rejected.
+                             */
+                            Q.all(recipes).then(function (recipesArray) {
+
+                                resolve(recipesArray);
+                            });
+                        });
+                });
         });
     }
 
     /** @inheritdoc */
     public get(recipeID: string): Promise<Recipe> {
 
+        // since 'this' loses scope inside the Promise, we store it here
+        let thisCaller = this;
+
         return new Promise<Recipe>(function (resolve, reject) {
 
+            /*
+             * Initially attempts to fetch a response using given recipeID
+             * from the DB. If this succeeds, the recipes referred to in the
+             * response are fetched. If it fails, Mashape API is contacted.
+             */
+            let db = new Database();
+            db.fetchRecipeResponse(Constants.DB_YUMMLY, recipeID)
+                .then(function (response) {
+
+                    resolve(thisCaller.buildRecipe(response));
+                })
+                .catch(function (error) {
+
+                    console.log(error);
+
+                    uniRest.get(thisCaller.buildGetString(recipeID))
+                        .header("X-Yummly-App-ID", thisCaller.API_ID)
+                        .header("X-Yummly-App-Key", thisCaller.API_KEY)
+                        .header("Accept", "application/json")
+                        .end(function (result: IResponse) {
+
+                            db.storeRecipeResponse(Constants.DB_YUMMLY,
+                                recipeID, JSON.stringify(result.body));
+
+                            resolve(thisCaller.buildRecipe(
+                                JSON.stringify(result.body)));
+                        });
+                });
         });
     }
 
     /** @inheritdoc */
     public buildSearchString(userOptions: ICallOptions): string {
 
-        // TODO: consider checking ingredients !== ""
-
         // 'querystring' module interprets userOptions to URL-friendly string
         let parameters = qs.stringify({
 
-            // the only parameter essential to this API call
-            q: userOptions.ingredients,
+            // the comma-separated list must be split by a space
+            q: userOptions.ingredients.replace(/,/g, " "),
             requirePictures: false
         });
 
@@ -470,12 +695,54 @@ export class YummlyCaller implements Caller {
     /** @inheritdoc */
     public buildRecipe(response: string): Recipe {
 
-        return new Recipe("Recipe1", [new Ingredient("Ingredient1", 10, "ml")], "", new Array<string>(), "");
+        let responseAsJSON = <IYummlyRecipe>JSON.parse(response);
+
+        let name = responseAsJSON.name;
+        let ingredients = responseAsJSON.ingredientLines
+            .map(function (ingredient) {
+
+                // TODO: consider abstracting out
+
+                let volume = CallerUtils.getIngredientVolume(ingredient);
+                let name = CallerUtils.getIngredientName(ingredient);
+
+                /*
+                 * If the returned volume is greater than 0, it can be used as
+                 * ingredient's volume. Otherwise, where no volume is found, a
+                 * value of 0 is given.
+                 */
+                if (volume > 0) {
+
+                    return new Ingredient(name,
+                        volume, "");
+
+                } else {
+
+                    return new Ingredient(name, 0, "");
+                }
+            });
+
+        // note: caller assumes images is array of length one
+        let image = responseAsJSON.images[0].hostedLargeUrl;
+        let source = responseAsJSON.source.sourceRecipeUrl;
+        let servings = responseAsJSON.numberOfServings;
+        let timeToMake = responseAsJSON.totalTimeInSeconds;
+        let attributionText = responseAsJSON.attribution.text;
+        let attributionHTML = responseAsJSON.attribution.html;
+
+        return new Recipe(name, ingredients, "", new Array<string>(), image,
+            source, servings, timeToMake, attributionText, attributionHTML);
     }
 
     /** @inheritdoc */
     public extractRecipes(response: string): Array<string> {
 
-        return new Array<string>();
+        let result = new Array<string>();
+        for (let recipe of (JSON.parse(response) as IYummlySearch).matches) {
+
+            result.push((<IYummlySearchItem>recipe).id);
+        }
+
+        return result;
     }
 }

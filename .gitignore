@@ -34,3 +34,6 @@ src/styles/external
 
 # Ignore containers
 *.zip
+
+# Ignore database files
+*.db

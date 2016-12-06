@@ -1,12 +1,12 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import * as $ from "jquery";
 
 import Ingredient from "../ingredient";
 
 import { IIngredientPopOverProps } from "./componentInterfaces";
 
-export default class IngredientPopOverComponent extends React.Component<IIngredientPopOverProps, {}> {
+export default class IngredientPopOverComponent extends
+    React.Component<IIngredientPopOverProps, {}> {
 
     constructor(props: IIngredientPopOverProps) {
 
@@ -15,7 +15,48 @@ export default class IngredientPopOverComponent extends React.Component<IIngredi
         this.onClickDefineIngredient = this.onClickDefineIngredient.bind(this);
     }
 
-    componentDidMount() {
+    public render() {
+
+        return <div>
+            <button type="button" name="addIngredientButton"
+                id="addIngredientButton"
+                className="btn btn-default btn-xs">
+                <span className="glyphicon glyphicon-plus"></span>
+            </button>
+            <div id="popOverHead" className="hide">
+                What have you got?
+            </div>
+            <div id="popOverContent" className="hide">
+                <div className="form-group">
+                    <div className="has-feedback">
+                        <label className="control-label"
+                            htmlFor="ingredientName">
+                            Ingredient's name</label>
+                        <input type="text" className="form-control"
+                            id="ingredientName" />
+                        <span className="form-control-feedback"></span>
+                    </div>
+                    <div className="has-feedback">
+                        <label className="control-label" htmlFor="volume">
+                            How much / many?</label>
+                        <input type="number" className="form-control"
+                            id="volume" />
+                        <span className="form-control-feedback"></span>
+                    </div>
+                    <div>
+                        <label className="control-label" htmlFor="volumeType">
+                            Unit</label>
+                        <input type="text" className="form-control"
+                            id="volumeType" />
+                    </div>
+                </div>
+                <button type="submit" id="addButton"
+                    className="btn btn-default">Add</button>
+            </div>
+        </div>;
+    }
+
+    private componentDidMount() {
 
         $("#addIngredientButton").popover({
             html: true,
@@ -61,44 +102,10 @@ export default class IngredientPopOverComponent extends React.Component<IIngredi
         });
     }
 
-    onClickDefineIngredient(ingredientName: string, volume: number,
+    private onClickDefineIngredient(ingredientName: string, volume: number,
         volumeType: string): void {
 
         let newIngredient = new Ingredient(ingredientName, volume, volumeType);
         this.props.onClickAddIngredient(newIngredient);
-    }
-
-    render() {
-
-        return <div>
-            <button name="addIngredientButton"
-                id="addIngredientButton"
-                className="btn btn-default btn-xs">+</button>
-            <div id="popOverHead" className="hide">
-                What have you got?
-            </div>
-            <div id="popOverContent" className="hide">
-                <div className="form-group">
-                    <div className="has-feedback">
-                        <label className="control-label" htmlFor="ingredientName">
-                            Ingredient's name</label>
-                        <input type="text" className="form-control" id="ingredientName" />
-                        <span className="form-control-feedback"></span>
-                    </div>
-                    <div className="has-feedback">
-                        <label className="control-label" htmlFor="volume">
-                            How much / many?</label>
-                        <input type="number" className="form-control" id="volume" />
-                        <span className="form-control-feedback"></span>
-                    </div>
-                    <div>
-                        <label className="control-label" htmlFor="volumeType">
-                            Unit</label>
-                        <input type="text" className="form-control" id="volumeType" />
-                    </div>
-                </div>
-                <button type="submit" id="addButton" className="btn btn-default">Add</button>
-            </div>
-        </div>;
     }
 }

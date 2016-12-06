@@ -3,9 +3,12 @@
 var express = require("express");
 var http = require("http");
 var path = require("path");
-var bodyParser = require("body-parser")
+var bodyParser = require("body-parser");
+var Q = require("q");
 
 var MashapeCaller = require("./src/api/caller").MashapeCaller;
+var YummlyCaller = require("./src/api/caller").YummlyCaller;
+var FoodToForkCaller = require("./src/api/caller").FoodToForkCaller;
 var Database = require("./src/db/database").Database;
 
 var Recipe = require("./src/recipe");
@@ -23,15 +26,31 @@ db.initialise();
 
 app.post("/api/search-recipes", function(req, res, then) {
 
-    var caller = new MashapeCaller();
-    caller.call(req.body).then(function(recipes) {
+    var mashapeCaller = new MashapeCaller();
+
+    var allResponses = [];
+
+    allResponses.push(mashapeCaller.call(req.body));
+
+    var yummlyCaller = new YummlyCaller();
+    allResponses.push(yummlyCaller.call(req.body));
+
+    var ftfCaller = new FoodToForkCaller();
+    allResponses.push(ftfCaller.call(req.body));
+
+    Q.all(allResponses).then(function(list) {
 
         var response = [];
 
-        recipes.map(function(recipe) {
+        for (var i = 0; i < list.length; i++) {
 
-            response.push(recipe.toJSON());
-        });
+            var recipes = list[i];
+
+            for (var j = 0; j < recipes.length; j++) {
+
+                response.push(recipes[j].toJSON());
+            }
+        }
 
         res.send(response);
     });

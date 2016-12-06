@@ -1,9 +1,9 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 
 import { IActionsProps } from "./componentInterfaces";
 
-export default class ActionsComponent extends React.Component<IActionsProps, {}> {
+export default class ActionsComponent extends
+    React.Component<IActionsProps, {}> {
 
     constructor(props: IActionsProps) {
 
@@ -11,26 +11,32 @@ export default class ActionsComponent extends React.Component<IActionsProps, {}>
         this.handleSearchClick = this.handleSearchClick.bind(this);
     }
 
-    shouldComponentUpdate(nextProps: IActionsProps): boolean {
+    public render() {
+
+        return <div className="panel panel-default">
+            <div className="panel-body">
+                <div className="btn-group btn-group-justified">
+                    <div className="btn-group">
+                        <button className="btn btn-default">Settings</button>
+                    </div>
+                    <div className="btn-group">
+                        <button className="btn btn-primary"
+                            onClick={this.handleSearchClick}>Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>;
+    }
+
+    private shouldComponentUpdate(nextProps: IActionsProps): boolean {
 
         // Component is currently 'static'
         return false;
     }
 
     /** Method handles the user's click on the search button. */
-    handleSearchClick(): void {
+    private handleSearchClick(): void {
 
         this.props.onClickSearch();
-    }
-
-    render() {
-
-        return <div className="panel panel-default">
-            <div className="panel-body btn-toolbar">
-                <button className="btn">Settings</button>
-                <button className="btn btn-primary"
-                    onClick={this.handleSearchClick}>Search</button>
-            </div>
-        </div>;
     }
 }

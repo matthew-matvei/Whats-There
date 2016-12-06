@@ -22,16 +22,77 @@ export default class Utils {
      */
     public static hash(obj: any): number {
 
-        if (typeof obj == "string") {
+        if (typeof obj === "string") {
 
             let objAsString = <string>obj;
             return this.hashString(objAsString);
 
-        } else if (typeof obj == "number") {
+        } else if (typeof obj === "number") {
 
             let objAsNumber = <number>obj;
             return this.hashNumber(objAsNumber);
         }
+    }
+
+    /**
+     * Method takes as input a recipe definition as string and returns a
+     * Recipe constructed according to the provided definition. This is used
+     * to effectively transmit Recipe objects from the server to client.
+     *
+     * @require for recipe = <IRecipeAsJSON>JSON.parse(definition)
+     *
+     *      && recipe.name
+     *
+     *      && for i in recipe.ingredients, this.parseIngredient(i) succeeds
+     *
+     *      && recipe.ingredients.length > 0
+     *
+     *      && recipe.sourceURL
+     *
+     * @param definition
+     *      a JSON-formatted string that describes the recipe to be created
+     *
+     * @return a recipe created according to the given definition
+     */
+    public static parseRecipe(definition: string): Recipe {
+
+        let recipe = <IRecipeAsJSON>JSON.parse(definition);
+
+        let thisUtil = this;
+        let ingredients = recipe.ingredients.map(function (ingredient) {
+
+            return thisUtil.parseIngredient(ingredient);
+        });
+
+        return new Recipe(recipe.name, ingredients, recipe.method,
+            recipe.allergens, recipe.imageURL, recipe.sourceURL,
+            recipe.servings, recipe.timeToMake, recipe.attributionText,
+            recipe.attributionHTML);
+    }
+
+    /**
+     * Method takes as input an ingredient definition as string and returns an
+     * Ingredient constructed according to the provided definition. This is used
+     * to effectively embed ingredient objects within Recipe definitions, which
+     * are then transmitted from server to client.
+     *
+     * @require for ingredient = <IIngredientAsJSON>JSON.parse(definition)
+     *
+     *      && ingredient.name
+     *
+     *      && ingredient.volume && ingredient.volume > 0
+     *
+     * @param definition
+     *      a JSON-formatted string that describes the recipe to be created
+     *
+     * @return a recipe created according to the given definition
+     */
+    private static parseIngredient(definition: string): Ingredient {
+
+        let ingredient = <IIngredientAsJSON>JSON.parse(definition);
+
+        return new Ingredient(ingredient.name, ingredient.volume,
+            ingredient.volumeType);
     }
 
     /**
@@ -79,63 +140,5 @@ export default class Utils {
         let p1 = 19;
 
         return Math.floor(value * p1);
-    }
-
-    /**
-     * Method takes as input a recipe definition as string and returns a
-     * Recipe constructed according to the provided definition. This is used
-     * to effectively transmit Recipe objects from the server to client.
-     *
-     * @require for recipe = <IRecipeAsJSON>JSON.parse(definition)
-     *
-     *      && recipe.name
-     *
-     *      && for i in recipe.ingredients, this.parseIngredient(i) succeeds
-     *
-     *      && recipe.ingredients.length > 0
-     *
-     *      && recipe.sourceURL
-     *
-     * @param definition
-     *      a JSON-formatted string that describes the recipe to be created
-     *
-     * @return a recipe created according to the given definition
-     */
-    public static parseRecipe(definition: string): Recipe {
-
-        let recipe = <IRecipeAsJSON>JSON.parse(definition);
-
-        let thisUtil = this;
-        let ingredients = recipe.ingredients.map(function (ingredient) {
-
-            return thisUtil.parseIngredient(ingredient);
-        });
-
-        return new Recipe(recipe.name, ingredients, recipe.method, recipe.allergens, recipe.sourceURL);
-    }
-
-    /**
-     * Method takes as input an ingredient definition as string and returns an
-     * Ingredient constructed according to the provided definition. This is used
-     * to effectively embed ingredient objects within Recipe definitions, which
-     * are then transmitted from server to client.
-     *
-     * @require for ingredient = <IIngredientAsJSON>JSON.parse(definition)
-     *
-     *      && ingredient.name
-     *
-     *      && ingredient.volume && ingredient.volume > 0
-     *
-     * @param definition
-     *      a JSON-formatted string that describes the recipe to be created
-     *
-     * @return a recipe created according to the given definition
-     */
-    private static parseIngredient(definition: string): Ingredient {
-
-        let ingredient = <IIngredientAsJSON>JSON.parse(definition);
-
-        return new Ingredient(ingredient.name, ingredient.volume,
-            ingredient.volumeType);
     }
 }

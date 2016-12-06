@@ -11,6 +11,7 @@ export interface IAppState {
 
     user: User;
     searchResults: Array<Recipe>;
+    isSearching: boolean;
 }
 
 export interface IHeaderProps {
@@ -67,6 +68,7 @@ export interface IMainProps {
     results: Array<Recipe>;
     ownedIngredients: Array<Ingredient>;
     name: string;
+    isSearching: boolean;
     pullNewFavouriteRecipe: (updateType: string, recipe: Recipe) => void;
     pullNewPastRecipe: (recipe: Recipe) => void;
 }
