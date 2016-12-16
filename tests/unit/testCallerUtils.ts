@@ -1,7 +1,6 @@
 import Constants from "../../src/constants";
 
 let expect = require("chai").expect;
-let assert = require("chai").assert;
 
 import CallerUtils from "../../src/api/callerUtils";
 
@@ -80,6 +79,90 @@ describe("Class CallerUtils'", function () {
 
             expect(CallerUtils.getIngredientName(ingredientDescription))
                 .to.equal(expectedDescription);
+        });
+    });
+
+    describe("compare() method", function () {
+
+        it("returns 0 when a === b; a and b are positive", function () {
+
+            let a = 5;
+            let b = 5;
+            let expected = 0;
+
+            expect(CallerUtils.compare(a, b)).to.equal(expected);
+        });
+
+        it("returns 0 when a === b; a and b are negative", function () {
+
+            let a = -5;
+            let b = -5;
+            let expected = 0;
+
+            expect(CallerUtils.compare(a, b)).to.equal(expected);
+        });
+
+        it("returns 0 when a === b; a and b are float", function () {
+
+            let a = 5.5;
+            let b = 5.5;
+            let expected = 0;
+
+            expect(CallerUtils.compare(a, b)).to.equal(expected);
+        });
+
+        it("return -1 when a < b; a is negative, b is positive", function () {
+
+            let a = -5.5;
+            let b = 5.5;
+            let expected = -1;
+
+            expect(CallerUtils.compare(a, b)).to.equal(expected);
+        });
+
+        it("return -1 when a < b; a and b are positive", function () {
+
+            let a = 5.5;
+            let b = 5.7;
+            let expected = -1;
+
+            expect(CallerUtils.compare(a, b)).to.equal(expected);
+        });
+
+        it("return -1 when a < b; a and b are negative", function () {
+
+            let a = -5.5;
+            let b = -5.3;
+            let expected = -1;
+
+            expect(CallerUtils.compare(a, b)).to.equal(expected);
+        });
+
+        it("returns +1 when a > b; a is positive, b is negative", function () {
+
+            let a = 5.5;
+            let b = -5.5;
+            let expected = 1;
+
+            expect(CallerUtils.compare(a, b)).to.equal(expected);
+        });
+
+        it("returns +1 when a > b; a and b are negative", function () {
+
+            let a = -5.5;
+            let b = -5.7;
+            let expected = 1;
+
+            expect(CallerUtils.compare(a, b)).to.equal(expected);
+        });
+
+        it("returns +1 when a > b; a and b are positive", function () {
+
+            let a = 5.7;
+            let b = 5.5;
+            let expected = 1;
+
+            expect(CallerUtils.compare(a, b)).to.equal(expected);
         });
     });
 });

@@ -145,4 +145,36 @@ export default class CallerUtils {
 
         return ingredient.substr(index + 1);
     }
+
+    /**
+     * Method takes as input numbers a, b and returns their comparative
+     * relation. This util method abstracts functionality for filter classes.
+     *
+     * @require a !== null && a !== undefined
+     *  &&  b !== null && !== undefined
+     *
+     * @ensure a < b --> compare(a, b) === -1
+     *  &&  a > b --> compare(a, b) === 1
+     *  &&  a === b --> compare(a, b) === 0
+     *
+     * @param a
+     *      the first object to be compared
+     * @param b
+     *      the other object to be compared
+     */
+    public static compare(a: number, b: number): number {
+
+        if (a === b) {
+
+            return 0;
+
+        } else if (a < b) {
+
+            return -1;
+
+        } else if (a > b) {
+
+            return 1;
+        }
+    }
 }

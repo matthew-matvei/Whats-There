@@ -337,9 +337,9 @@ describe("Class YummlyCaller's", function () {
     before(function () {
 
         expectedRecipeIDs = new Array<string>();
+        expectedRecipeIDs.push("Chunky-Rice-And-Bean-Soup-Recipezaar");
         expectedRecipeIDs.push("Vegetarian-Cabbage-Soup-Recipezaar");
         expectedRecipeIDs.push("Oriental-Inspired-Vegetable-Soup-Recipezaar");
-        expectedRecipeIDs.push("Chunky-Rice-And-Bean-Soup-Recipezaar");
 
         let expectedResponse = <IYummlyRecipe>JSON.parse(yummlyGetResponse);
 
@@ -444,8 +444,8 @@ describe("Class YummlyCaller's", function () {
 
         it("extracts recipe IDs", function () {
 
-            expect(yummlyCaller.extractRecipes(yummlySearchResponse)).to.deep
-                .equal(expectedRecipeIDs);
+            expect(yummlyCaller.extractRecipes(yummlySearchResponse,
+                singleIngredientOptions)).to.deep.equal(expectedRecipeIDs);
         });
     });
 });

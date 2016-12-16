@@ -123,8 +123,13 @@ export default class Ingredient {
     /**
      * Method returns whether this ingredient is equal to a given other
      * ingredient.
+     *
+     * @param other
+     *      another object to be compared to
+     *
+     * @return whether the other object is equal to this ingredient
      */
-    public equals(other: Object) {
+    public equals(other: Object): boolean {
 
         if (!(other instanceof Ingredient)) {
 
@@ -138,9 +143,51 @@ export default class Ingredient {
             this.volumeType !== otherIngredient.getVolumeType()) {
 
             return false;
+
+        } else {
+
+            return true;
+        }
+    }
+
+    /**
+     * Method returns true if the ingredient is similar to the given other
+     * object. The other object is similar to this when it is an ingredient
+     * and its name contains any word that this ingredient's name contains.
+     *
+     * @ensure if other.getName() contains a word that this.getName() contains,
+     *      method returns true
+     *
+     * @param other
+     *       another object to be compared to
+     *
+     * @return whether the other object is loosely equal to this ingredient
+     */
+    public softEquals(other: Object): boolean {
+
+        if (!(other instanceof Ingredient)) {
+
+            return false;
         }
 
-        return true;
+        let otherIngredient = <Ingredient>other;
+
+        // in case the ingredient name contains more than one word
+        for (let word of this.getName().split(" ")) {
+
+            /*
+             * If filtering using the current word returns an array of length
+             * greater than 0, a match has been found, method returns true.
+             */
+            if (otherIngredient.getName().split(" ").filter(
+                (w) => w === word).length > 0) {
+
+                return true;
+            }
+        }
+
+        // no matches
+        return false;
     }
 
     public hashCode(): number {

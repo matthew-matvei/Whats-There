@@ -43,6 +43,16 @@ export default class Constants {
     public static readonly DB_YUMMLY = "Yummly.db";
     public static readonly DB_FOOD_TO_FORK = "FoodToFork.db";
 
+    /* ----------------- CLIENT-SIDE RESULTS ORDERING -------------------- */
+    // the sort type
+    public static readonly SORT_BY_RELEVANCE = "By relevance";
+    public static readonly SORT_BY_TIME_TAKEN = "By time";
+    public static readonly SORT_BY_SERVINGS = "By no. servings";
+
+    // the sort order
+    public static readonly SORT_ASCENDING = "Ascending";
+    public static readonly SORT_DESCENDING = "Descending";
+
     /* ----------------- SUPPORTED VULGAR FRACTIONS ---------------------- */
     public static readonly SYMBOL_ONE_QUARTER = "¼";
     public static readonly SYMBOL_ONE_HALF = "½";
@@ -58,4 +68,10 @@ export default class Constants {
     public static readonly UPDATE_ADD = "ADD";
     public static readonly UPDATE_REMOVE = "REMOVE";
     public static readonly VALUE_NOT_FOUND = -1;
+
+    // minimum number of results server should leave unfiltered
+    public static readonly MINIMUM_UNFILTERED = 5;
+
+    // threshold for missed words when finding ingredient name matches
+    public static readonly RELEVANCE_THRESHOLD = 3;
 }

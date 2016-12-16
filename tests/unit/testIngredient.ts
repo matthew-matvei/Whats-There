@@ -1,18 +1,17 @@
 /// <reference path="../../typings/index.d.ts" />
 
-import { UnregisteredUser } from "../../src/user";
 import Recipe from "../../src/recipe";
 import Ingredient from "../../src/ingredient";
-import Constants from "../../src/constants";
 
 let expect = require("chai").expect;
-let assert = require("chai").assert;
 
 /** Test suite checks functionality defined in '../../src/ingredient' */
 describe("Class Ingredient's", function () {
 
     let ingredient: Ingredient;
     let ingredient2: Ingredient;
+    let ingredientSoft: Ingredient;
+    let ingredientSoft2: Ingredient;
 
     before(function () {
 
@@ -129,6 +128,55 @@ describe("Class Ingredient's", function () {
                 let otherIngredient = new Ingredient("Ingredient1", 10, "ml");
 
                 expect(ingredient.equals(otherIngredient)).to.be.true;
+            });
+    });
+
+    describe("softEquals() method", function () {
+
+        it("returns false if other object is not an ingredient", function () {
+
+            let ingredients = new Array<Ingredient>();
+            ingredients.push(ingredient);
+            let recipe = new Recipe("Recipe1", ingredients, "Method1",
+                new Array<string>(), "IMG", "URL", 1, 1);
+
+            expect(ingredient.softEquals(recipe)).to.be.false;
+        });
+
+        it("returns true if a word in other ingredient's name exists " +
+            "in this ingredient's name", function () {
+
+                ingredientSoft = new Ingredient("Ingredient one", 10, "");
+                ingredientSoft2 = new Ingredient("Ingredient soft2", 10, "");
+
+                expect(ingredientSoft.softEquals(ingredientSoft2)).to.be.true;
+            });
+
+        it("returns true if only word in other ingredient's name exists " +
+            "in this ingredient's single-word name", function () {
+
+                ingredientSoft = new Ingredient("Ingredient", 10, "");
+                ingredientSoft2 = new Ingredient("Ingredient", 10, "");
+
+                expect(ingredientSoft.softEquals(ingredientSoft2)).to.be.true;
+            });
+
+        it("returns true if other other ingredient's name contains this " +
+            "ingredient's single-word name", function () {
+
+                ingredientSoft = new Ingredient("Ingredient", 10, "");
+                ingredientSoft2 = new Ingredient("Ingredient Soft2", 10, "");
+
+                expect(ingredientSoft.softEquals(ingredientSoft2)).to.be.true;
+            });
+
+        it("returns true if only word in other ingredient's name exists " +
+            "in this ingredient's multi-word name", function () {
+
+                ingredientSoft = new Ingredient("Ingredient Soft", 10, "");
+                ingredientSoft2 = new Ingredient("Ingredient", 10, "");
+
+                expect(ingredientSoft.softEquals(ingredientSoft2)).to.be.true;
             });
     });
 });

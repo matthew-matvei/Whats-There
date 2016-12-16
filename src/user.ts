@@ -11,9 +11,6 @@ let uuid = require("uuid");
 /**
  * Abstract class User stores basic user information. A User may be a registered
  * user or an unregistered user.
- *
- * @abstract
- * @class User
  */
 export abstract class User {
 
@@ -29,49 +26,19 @@ export abstract class User {
      *  &&  this.allergies !== undefined
      */
 
-    /**
-     * Always stored in lower case
-     *
-     * @private
-     * @type {string}
-     * @memberOf User
-     */
+    // always stored in lower case
     private name: string;  // always stored in lower case
 
-    /**
-     * Stores the ingredients the user has, if any.
-     *
-     * @private
-     * @type {Array<Ingredient>}
-     * @memberOf User
-     */
+    // stores the ingredients the user has, if any
     private ingredients: Array<Ingredient>;
 
-    /**
-     * Stores the user's MAX_FAV_RECIPES favourite recipes alphabetically.
-     *
-     * @private
-     * @type {Array<Recipe>}
-     * @memberOf User
-     */
+    // stores the user's MAX_FAV_RECIPES favourite recipes alphabetically.
     private favRecipes: Array<Recipe>;
 
-    /**
-     * Stores the user's MAX_PAST_RECIPES recent recipes.
-     *
-     * @private
-     * @type {Array<Recipe>}
-     * @memberOf User
-     */
+    // stores the user's MAX_PAST_RECIPES recent recipes.
     private pastRecipes: Array<Recipe>;
 
-    /**
-     * Stores the user's allergies.
-     *
-     * @private
-     * @type {Array<string>}
-     * @memberOf User
-     */
+    // stores the user's allergies.
     private allergies: Array<string>;
 
     /**
@@ -157,7 +124,7 @@ export abstract class User {
      *
      * @param ingredient
      *
-     * @return
+     * @return false in the case where given ingredient could not be found
      */
     public removeIngredient(ingredient: Ingredient): boolean {
 
@@ -208,7 +175,8 @@ export abstract class User {
      * the recipe is not found, the method just returns false.
      *
      * @param recipe
-     * @return
+     *
+     * @return false in the case where given recipe could not be found
      */
     public removeFavRecipe(recipe: Recipe): boolean {
 
@@ -266,7 +234,7 @@ export abstract class User {
      * @param recipe
      *      the recipe to be removed from the user's list of past recipes
      *
-     * @return
+     * @return false in the case where given recipe could not be found
      */
     public removePastRecipe(recipe: Recipe): boolean {
 
@@ -315,7 +283,7 @@ export abstract class User {
      * @param allergyName
      *      the name of the allergy to be removed
      *
-     * @return
+     * @return false in the case where given allergy could not be found
      */
     public removeAllergy(allergyName: string): boolean {
 
@@ -337,7 +305,7 @@ export abstract class User {
      *
      * @require this.name !== "" && this.name !== undefined
      *
-     * @return
+     * @return the user's name
      */
     public getName(): string {
 
@@ -366,11 +334,11 @@ export abstract class User {
      *
      *      &&  list is comma-separated with no spaces
      *
-     * @return a comma-separated list of ingredients the user has
+     * @return a comma-separated, alphabetical list of ingredients the user has
      */
     public getIngredientsAlphabetically(): string {
 
-        return this.getIngredients().map(function(ingredient) {
+        return this.getIngredients().map(function (ingredient) {
 
             return ingredient.getName();
 
@@ -382,7 +350,7 @@ export abstract class User {
      *
      * @require this.favRecipes
      *
-     * @return
+     * @return the user's favourite recipes
      */
     public getFavRecipes(): Array<Recipe> {
 
@@ -394,7 +362,7 @@ export abstract class User {
      *
      * @require this.pastRecipes
      *
-     * @return
+     * @return the user's past recipes
      */
     public getPastRecipes(): Array<Recipe> {
 
@@ -406,7 +374,7 @@ export abstract class User {
      *
      * @require this.allergies
      *
-     * @return
+     * @return the user's allergies
      */
     public getAllergies(): Array<string> {
 
@@ -416,7 +384,7 @@ export abstract class User {
     /**
      * Method returns whether it is possible to add a favourite recipe.
      *
-     * @return
+     * @return whether or not a favourite recipe can be added
      */
     public canAddFavRecipe(): boolean {
 
@@ -434,7 +402,7 @@ export abstract class User {
      * Method checks the class invariant. This is intended to be used
      * for debugging and testing only.
      *
-     * @return
+     * @return whether the class invariance has been maintained
      */
     public checkInvariant(): boolean {
 
@@ -482,11 +450,8 @@ export abstract class User {
 }
 
 /**
- * @classdesc RegisteredUser stores infor about a user in the context of this
+ * RegisteredUser stores info about a user in the context of this
  * application.
- *
- * @class RegisteredUser
- * @extends {User}
  */
 export class RegisteredUser extends User {
 
@@ -507,6 +472,15 @@ export class RegisteredUser extends User {
      * Creates an instance of RegisteredUser.
      *
      * @param name
+     *      the registered user's display name
+     * @param ingredients
+     *      the registered user's owned ingredients
+     * @param
+     *      the registered user's favourite recipes
+     * @param
+     *      the registered user's past recipes
+     * @param
+     *      the registered user's allergens
      */
     constructor(name: string, ingredients: Array<Ingredient>,
         favRecipes: Array<Recipe>, pastRecipes: Array<Recipe>,
@@ -548,11 +522,8 @@ export class RegisteredUser extends User {
 }
 
 /**
- * @classdesc UnregisteredUser stores info about a user in the context of this
+ * UnregisteredUser stores info about a user in the context of this
  * application.
- *
- * @class UnregisteredUser
- * @extends {User}
  */
 export class UnregisteredUser extends User {
 

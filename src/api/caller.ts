@@ -2,17 +2,18 @@
 
 import Q = require("q");
 
+import Constants from "../constants";
 import { Database } from "../db/database";
-import Recipe from "../recipe";
 import Ingredient from "../ingredient";
-import { ICallOptions } from "./callOptions";
+import Recipe from "../recipe";
 import {
-    IMashapeRecipe, IYummlyRecipe, IFoodToForkRecipe, IFoodToForkSearch,
-    IYummlySearch, IFoodToForkSearchItem, IMashapeSearchItem, IYummlySearchItem,
-    IResponse
+    IFoodToForkRecipe, IFoodToForkSearch, IFoodToForkSearchItem, IMashapeRecipe,
+    IMashapeSearchItem, IResponse, IYummlyRecipe,
+    IYummlySearchItem
 } from "./callerInterfaces";
 import CallerUtils from "./callerUtils";
-import Constants from "../constants";
+import { ICallOptions } from "./callOptions";
+import { FoodToForkFilter, MashapeFilter, YummlyFilter } from "./filter";
 
 let qs = require("querystring");
 let uniRest = require("unirest");
@@ -23,7 +24,7 @@ let uniRest = require("unirest");
  * @interface Interface defines the API caller, which other API classes that
  * handle specific site communication implement.
  */
-interface ICaller {
+export interface ICaller {
 
     /**
      * Primary method of any Caller derived class, it handles everything from
@@ -91,14 +92,18 @@ interface ICaller {
     /**
      * Method takes as input a JSON-formatted string as the response from the
      * API after searching for recipes. It handles finding and returning the
-     * various recipe IDs as an array of string.
+     * various recipe IDs as an array of string. Since ordering is performed,
+     * userOptions may optionally be passed to allow manual ordering based on
+     * user's call options.
      *
      * @param response
      *      the JSON-formatted response from a recipe search
+     * @param userOptions
+     *      options with which the user made the API call (optional)
      *
      * @return a list of recipe IDs
      */
-    extractRecipes(response: string): Array<string>;
+    extractRecipes(response: string, userOptions?: ICallOptions): Array<string>;
 }
 
 /**
@@ -146,7 +151,11 @@ export class FoodToForkCaller implements ICaller {
                      */
                     Q.all(recipes).then(function (recipesArray) {
 
-                        resolve(recipesArray);
+                        let filter = new FoodToForkFilter();
+                        let sortedRecipes = filter.filterByIngredients(
+                            recipesArray, userOptions);
+
+                        resolve(sortedRecipes);
                     });
                 })
                 .catch(function (error) {
@@ -179,7 +188,11 @@ export class FoodToForkCaller implements ICaller {
                              */
                             Q.all(recipes).then(function (recipesArray) {
 
-                                resolve(recipesArray);
+                                let filter = new FoodToForkFilter();
+                                let sortedRecipes = filter.filterByIngredients(
+                                    recipesArray, userOptions);
+
+                                resolve(sortedRecipes);
                             });
                         });
                 });
@@ -536,8 +549,11 @@ export class MashapeCaller implements ICaller {
     /** @inheritdoc */
     public extractRecipes(response: string): Array<string> {
 
+        let filter = new MashapeFilter();
+        let sortedResponse = filter.filterByIngredients(response);
+
         let result = new Array<string>();
-        for (let recipe of JSON.parse(response)) {
+        for (let recipe of JSON.parse(sortedResponse)) {
 
             result.push((<IMashapeSearchItem>recipe).id.toString());
         }
@@ -577,7 +593,8 @@ export class YummlyCaller implements ICaller {
                 .then(function (response) {
 
                     let recipes = new Array<Promise<Recipe>>();
-                    let recipeIDs = thisCaller.extractRecipes(response);
+                    let recipeIDs = thisCaller.extractRecipes(response,
+                        userOptions);
                     for (let id of recipeIDs) {
 
                         recipes.push(thisCaller.get(id));
@@ -610,7 +627,7 @@ export class YummlyCaller implements ICaller {
 
                             let recipes = new Array<Promise<Recipe>>();
                             let recipeIDs = thisCaller.extractRecipes(
-                                JSON.stringify(result.body));
+                                JSON.stringify(result.body), userOptions);
 
                             for (let id of recipeIDs) {
 
@@ -735,10 +752,14 @@ export class YummlyCaller implements ICaller {
     }
 
     /** @inheritdoc */
-    public extractRecipes(response: string): Array<string> {
+    public extractRecipes(response: string,
+        userOptions: ICallOptions): Array<string> {
+
+        let filter = new YummlyFilter();
+        let sortedResponse = filter.filterByIngredients(response, userOptions);
 
         let result = new Array<string>();
-        for (let recipe of (JSON.parse(response) as IYummlySearch).matches) {
+        for (let recipe of JSON.parse(sortedResponse)) {
 
             result.push((<IYummlySearchItem>recipe).id);
         }

@@ -71,6 +71,63 @@ export default class Utils {
     }
 
     /**
+     * Method takes as input non-negative numbers a, b, and returns the
+     * comparative relation between them. Method handles amounts equal to zero
+     * differently, in order to satisfy specific requirements.
+     *
+     * @require a !== null && a !== undefined && a >= 0
+     *  &&  b !== null && b !== undefined && b >= 0
+     *
+     * @ensure (a === 0 && b === 0 --> \result === 0)
+     *  ||  (a === 0 && b > 0 --> \result === 1)
+     *  ||  (a > 0 && b === 0 --> \result === -1)
+     *  ||  (a < b --> \result === -1)
+     *  ||  (a > b --> \result === 1)
+     *  ||  (a === b --> \result === 0)
+     *
+     * @param a
+     *      the first number
+     * @param b
+     *      the number to compare to
+     *
+     * @return the comparative relation between a and b
+     */
+    public static compareAmounts(a: number, b: number): number {
+
+        /*
+         * Initially checks for and handles cases where either a or b are equal
+         * to 0. Since 0 is interpreted as no information is available, 0 is not
+         * simply 'less than' 1.
+         */
+        if (a === 0 && b === 0) {
+
+            return 0;
+
+        } else if (a === 0 && b > 0) {
+
+            return 1;
+
+        } else if (a > 0 && b === 0) {
+
+            return -1;
+        }
+
+        // no 0's detected, values can be compared regularly
+        if (a === b) {
+
+            return 0;
+
+        } else if (a < b) {
+
+            return -1;
+
+        } else {
+
+            return 1;
+        }
+    }
+
+    /**
      * Method takes as input an ingredient definition as string and returns an
      * Ingredient constructed according to the provided definition. This is used
      * to effectively embed ingredient objects within Recipe definitions, which

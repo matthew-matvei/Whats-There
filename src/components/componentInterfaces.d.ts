@@ -12,11 +12,13 @@ export interface IAppState {
     user: User;
     searchResults: Array<Recipe>;
     isSearching: boolean;
+    sortInfo: ISortInfo;
 }
 
 export interface IHeaderProps {
 
     name: string;
+    pullNewSortInfo: (newCriteria: string, newOrder: string) => void;
 }
 
 /** Interface represents the properties for the Welcome Component message. */
@@ -93,7 +95,20 @@ export interface IRecipeModalProps {
     onClickAddFavouriteRecipe: (recipe: Recipe) => void;
 }
 
+/**
+ * Interface represents an Ingredient Pop Over's Component's properties.
+ */
 export interface IIngredientPopOverProps {
 
     onClickAddIngredient: (ingredient: Ingredient) => void;
+}
+
+/**
+ * Interface describes sorting information that determines how recipes are
+ * sorted.
+ */
+export interface ISortInfo {
+
+    sortCriteria: string;
+    order: string;
 }

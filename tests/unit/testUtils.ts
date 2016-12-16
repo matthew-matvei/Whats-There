@@ -5,7 +5,6 @@ import Ingredient from "../../src/ingredient";
 import { IRecipeAsJSON } from "../../src/interfaces";
 
 let expect = require("chai").expect;
-let assert = require("chai").assert;
 
 describe("Class Util's", function () {
 
@@ -201,6 +200,60 @@ describe("Class Util's", function () {
                 expectedAttributionText, expectedAttributionHTML);
 
             expect(Utils.parseRecipe(definition).equals(recipe)).to.be.true;
+        });
+    });
+
+    describe("compareAmounts() method", function () {
+
+        let a: number;
+        let b: number;
+
+        it("returns 0 when a, b === 0", function () {
+
+            a = 0;
+            b = 0;
+
+            expect(Utils.compareAmounts(a, b)).to.equal(0);
+        });
+
+        it("returns 1 when a === 0, b > 0", function () {
+
+            a = 0;
+            b = 1;
+
+            expect(Utils.compareAmounts(a, b)).to.equal(1);
+        });
+
+        it("return -1 when a > 0, b === 0", function () {
+
+            a = 1;
+            b = 0;
+
+            expect(Utils.compareAmounts(a, b)).to.equal(-1);
+        });
+
+        it("returns 0 when a === b and a, b > 0", function () {
+
+            a = 1;
+            b = 1;
+
+            expect(Utils.compareAmounts(a, b)).to.equal(0);
+        });
+
+        it("returns 1 when a > b and a, b > 0", function () {
+
+            a = 2;
+            b = 1;
+
+            expect(Utils.compareAmounts(a, b)).to.equal(1);
+        });
+
+        it("returns -1 when a < b and a, b > 0", function () {
+
+            a = 1;
+            b = 2;
+
+            expect(Utils.compareAmounts(a, b)).to.equal(-1);
         });
     });
 });

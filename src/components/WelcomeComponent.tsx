@@ -7,7 +7,7 @@ export default class WelcomeComponent extends
 
     public render() {
 
-        return <div className="col-xs-5">
+        return <div className="col-xs-2">
             <p className="navbar-text navbar-right text-capitalize">
                 Welcome, {this.props.name}
             </p>

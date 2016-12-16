@@ -83,6 +83,7 @@ export interface IYummlySearch {
 export interface IYummlySearchItem {
 
     id: string;
+    ingredients: Array<string>;
 }
 
 /**

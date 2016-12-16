@@ -6,6 +6,7 @@ import Recipe from "../recipe";
 import Ingredient from "../ingredient";
 import Constants from "../constants";
 import Utils from "../utils";
+import Sorter from "../sorter";
 import { ICallOptions } from "../api/callOptions";
 
 import HeaderComponent from "./HeaderComponent";
@@ -24,13 +25,18 @@ export default class AppComponent extends
 
             user: this.props.user,
             searchResults: new Array<Recipe>(),
-            isSearching: false
+            isSearching: false,
+            sortInfo: {
+                sortCriteria: Constants.SORT_BY_RELEVANCE,
+                order: Constants.SORT_DESCENDING
+            }
 
         } as IAppState;
 
         this.updateIngredients = this.updateIngredients.bind(this);
         this.updateFavouriteRecipes = this.updateFavouriteRecipes.bind(this);
         this.updatePastRecipes = this.updatePastRecipes.bind(this);
+        this.updateSortInfo = this.updateSortInfo.bind(this);
         this.searchRecipes = this.searchRecipes.bind(this);
     }
 
@@ -38,7 +44,8 @@ export default class AppComponent extends
 
         return <div>
             <div className="row">
-                <HeaderComponent name={this.props.user.getName()} />
+                <HeaderComponent name={this.props.user.getName()}
+                    pullNewSortInfo={this.updateSortInfo} />
             </div>
             <div className="row">
                 <div className="col-xs-12">
@@ -99,7 +106,7 @@ export default class AppComponent extends
         this.forceUpdate();
     }
 
-    private updateFavouriteRecipes(updateType: string, recipe: Recipe) {
+    private updateFavouriteRecipes(updateType: string, recipe: Recipe): void {
 
         if (updateType === Constants.UPDATE_ADD) {
 
@@ -114,12 +121,29 @@ export default class AppComponent extends
         this.forceUpdate();
     }
 
-    private updatePastRecipes(recipe: Recipe) {
+    private updatePastRecipes(recipe: Recipe): void {
 
         this.state.user.addPastRecipe(recipe);
 
         // since state is manipulated directly, explicitly states to update
         this.forceUpdate();
+    }
+
+    private updateSortInfo(newCriteria: string, newOrder: string): void {
+
+        let orderedResults = Sorter.sort(this.state.searchResults,
+            this.state.user.getIngredients(), newCriteria, newOrder);
+
+        this.setState({
+
+            sortInfo: {
+
+                sortCriteria: newCriteria,
+                order: newOrder,
+            },
+            searchResults: new Array<Recipe>().concat(orderedResults)
+
+        } as IAppState);
     }
 
     /**
@@ -157,11 +181,16 @@ export default class AppComponent extends
                     searchResults.push(Utils.parseRecipe(recipeDefinition));
                 }
 
+                let orderedResults = Sorter.sort(searchResults,
+                    thisApp.state.user.getIngredients(),
+                    thisApp.state.sortInfo.sortCriteria,
+                    thisApp.state.sortInfo.order);
+
                 // updates this.state.searchResults with those retrieved
                 thisApp.setState({
 
                     isSearching: false,
-                    searchResults: new Array<Recipe>().concat(searchResults)
+                    searchResults: new Array<Recipe>().concat(orderedResults)
 
                 } as IAppState);
             });

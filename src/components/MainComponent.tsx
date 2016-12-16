@@ -73,51 +73,6 @@ export default class MainComponent extends
         }
     }
 
-    private shouldComponentUpdate(nextProps: IMainProps,
-        nextState: IMainState): boolean {
-
-        if (!this.props.isSearching && nextProps.isSearching) {
-
-            return true;
-        }
-
-        if (this.props.isSearching && !nextProps.isSearching) {
-
-            return true;
-        }
-
-        if (!this.state.recipe && nextState.recipe) {
-
-            return true;
-        }
-
-        if (this.state.recipe && !this.state.recipe.equals(nextState.recipe)) {
-
-            return true;
-        }
-
-        // if the length of the results are different, component should update
-        if (this.props.results.length !== nextProps.results.length) {
-
-            return true;
-        }
-
-        /*
-         * If the lengths are the same, the function analyses each recipe in
-         * the results array until a conflict is found, returning true.
-         */
-        for (let i = 0; i < this.props.results.length; i++) {
-
-            if (!this.props.results[i].equals(nextProps.results[i])) {
-
-                return true;
-            }
-        }
-
-        // results are the same, so returns false
-        return false;
-    }
-
     private updateRecipe(recipe: Recipe): void {
 
         this.setState({
