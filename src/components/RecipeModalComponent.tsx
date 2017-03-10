@@ -1,4 +1,7 @@
+/// <reference path="../../typings/index.d.ts" />
+
 import * as React from "react";
+let ImageLoader = require("react-imageloader");
 
 import { IRecipeModalProps } from "./componentInterfaces";
 
@@ -33,11 +36,18 @@ export default class RecipeModalComponent
                 return <li key={ingredient.toString()}
                     className="list-group-item">
                     <div className="row">
-                        <span className="list-group-item-text text-capitalize col-xs-12">
+                        <span className="text-capitalize col-xs-12">
                             {ingredient.toString()}</span>
                     </div>
                 </li>;
             });
+
+        let servingsInfo = (this.props.recipe.getTimeToMake() > 0) &&
+            (this.props.recipe.getServings() > 0) ?
+            <span className="small">Serves&nbsp;
+                {this.props.recipe.getServings()}&nbsp;in&nbsp;
+                {this.props.recipe.getTimeToMakeFormatted()}
+            </span> : null;
 
         let method = this.props.recipe.getMethod() ? <p>
             {this.props.recipe.getMethod()}
@@ -62,28 +72,24 @@ export default class RecipeModalComponent
                         <div className="col-xs-12">
                             <div className="row">
                                 <div className="col-xs-4">
-                                    <ul className="list-group">
-                                        <li className="list-group-item active">
-                                            <h4 className="list-group-item-heading">
-                                                Ingredients
-                                        </h4>
-                                        </li>
+                                    <div className="panel panel-default">
+                                        <div className="panel-heading">
+                                            <h4>Ingredients</h4>
+                                        </div>
                                         {ingredients}
-                                    </ul>
+                                    </div>
                                 </div>
                                 <div className="col-xs-8">
-                                    <img className="img-responsive"
-                                        src={thisComponent.props.recipe.getImage()} />
+                                    <ImageLoader src={thisComponent.props.recipe.getImage()}
+                                        wrapper={React.DOM.div}>
+                                        Image not available
+                                    </ImageLoader>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="col-xs-12">
                                     <h3 className="text-uppercase">Method&nbsp;
-                                        <span className="small">Serves&nbsp;
-                                        {this.props.recipe.getServings()}&nbsp;
-                                        in&nbsp;{this.props.recipe
-                                                .getTimeToMakeFormatted()}
-                                        </span>
+                                        {servingsInfo}
                                     </h3>
                                     {method}
                                 </div>

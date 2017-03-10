@@ -4,7 +4,7 @@ import $ = require("jquery");
 
 import Recipe from "../recipe";
 import Ingredient from "../ingredient";
-import Constants from "../constants";
+import { Constants, UpdateType } from "../constants";
 import Utils from "../utils";
 import Sorter from "../sorter";
 import { ICallOptions } from "../api/callOptions";
@@ -74,30 +74,25 @@ export default class AppComponent extends
      * updating the user's list of ingredients according to the given
      * parameters.
      *
-     * @require updateType.toUpperCase() === "ADD"
+     * @ensure updateType.ADD --> user.getIngredients() contains ingredient
      *
-     *      || updateType.toUpperCase() === "REMOVE"
-     *
-     * @ensure updateType.toUpperCase() === "ADD" -->
-     *          user.getIngredients() contains ingredient
-     *
-     *      && updateType.toUpperCase() === "REMOVE" -->
+     *      && updateType.REMOVE -->
      *          user.getIngredients() does not contain ingredient
      *
      * @param updateType
-     *      the type of update to enact, either 'ADD' or 'REMOVE'
+     *      the type of update to enact
      * @param ingredient
      *      the ingredient to either add to or remove from the user's list of
      *      ingredients
      */
-    private updateIngredients(updateType: string,
+    private updateIngredients(updateType: UpdateType,
         ingredient: Ingredient): void {
 
-        if (updateType === Constants.UPDATE_ADD) {
+        if (updateType === UpdateType.ADD) {
 
             this.state.user.addIngredient(ingredient);
 
-        } else if (updateType === Constants.UPDATE_REMOVE) {
+        } else if (updateType === UpdateType.REMOVE) {
 
             this.state.user.removeIngredient(ingredient);
         }
@@ -106,13 +101,14 @@ export default class AppComponent extends
         this.forceUpdate();
     }
 
-    private updateFavouriteRecipes(updateType: string, recipe: Recipe): void {
+    private updateFavouriteRecipes(updateType: UpdateType,
+        recipe: Recipe): void {
 
-        if (updateType === Constants.UPDATE_ADD) {
+        if (updateType === UpdateType.ADD) {
 
             this.state.user.addFavRecipe(recipe);
 
-        } else if (updateType === Constants.UPDATE_REMOVE) {
+        } else if (updateType === UpdateType.REMOVE) {
 
             this.state.user.removeFavRecipe(recipe);
         }

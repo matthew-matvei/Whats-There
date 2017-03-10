@@ -29,8 +29,9 @@ tests/**/*.js
 # Do not share installed typings definitions
 typings
 
-# 3rd-party style resources
-src/styles/external
+# 3rd-party style resources, apart from custom bootstrap options
+src/styles/external/*
+!src/styles/external/_bootstrap-custom.scss
 
 # Ignore containers
 *.zip

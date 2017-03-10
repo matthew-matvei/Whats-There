@@ -1,4 +1,4 @@
-import Constants from "../constants";
+import { Constants } from "../constants";
 import Recipe from "../recipe";
 import CallerUtils from "./callerUtils";
 import { ICallOptions } from "./callOptions";
@@ -71,9 +71,12 @@ abstract class Filter {
         for (let requestedIngredient of
             userOptions.ingredients.split(",")) {
 
+            // trailing commas are stripped out
+            requestedIngredient = requestedIngredient.replace(",", "");
+
             // if any part of the name matches, returns 0
-            if (ingredient.filter(
-                (word) => word === requestedIngredient).length > 0) {
+            if (ingredient.filter((word) => word.replace(",", "") ===
+                requestedIngredient).length > 0) {
 
                 return 0;
             }

@@ -2,6 +2,7 @@ import * as React from "react";
 
 import Recipe from "../recipe";
 import Ingredient from "../ingredient";
+import { UpdateType } from "../constants";
 
 import ActionsComponent from "./ActionsComponent";
 import IngredientListComponent from "./IngredientListComponent";
@@ -79,7 +80,8 @@ export default class SideBarComponent extends
      * @param ingredient
      *      the ingredient to be moved up to the App Component
      */
-    private moveIngredientUp(updateType: string, ingredient: Ingredient): void {
+    private moveIngredientUp(updateType: UpdateType,
+        ingredient: Ingredient): void {
 
         this.props.pullNewIngredient(updateType, ingredient);
     }
@@ -93,7 +95,7 @@ export default class SideBarComponent extends
         this.props.pullSearchClick();
     }
 
-    private moveFavRecipeUp(updateType: string, recipe: Recipe): void {
+    private moveFavRecipeUp(updateType: UpdateType, recipe: Recipe): void {
 
         this.props.pullNewRecipe(updateType, recipe);
     }

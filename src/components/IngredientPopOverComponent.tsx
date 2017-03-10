@@ -18,11 +18,8 @@ export default class IngredientPopOverComponent extends
     public render() {
 
         return <div>
-            <button type="button" name="addIngredientButton"
-                id="addIngredientButton"
-                className="btn btn-default btn-xs">
-                <span className="glyphicon glyphicon-plus"></span>
-            </button>
+            <span className="glyphicon glyphicon-plus btn btn-primary btn-xs"
+                id="addIngredientButton"></span>
             <div id="popOverHead" className="hide">
                 What have you got?
             </div>

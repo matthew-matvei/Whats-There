@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import Ingredient from "../ingredient";
-
 import { IRecipeProps } from "./componentInterfaces";
 
 export default class RecipeComponent extends React.Component<IRecipeProps, {}> {
@@ -19,17 +17,14 @@ export default class RecipeComponent extends React.Component<IRecipeProps, {}> {
         let ownedIngredients = thisComponent.props.recipe.getIngredients()
             .map(function (ingredient) {
 
-                if (thisComponent.props.ownedIngredients.findIndex(
-                    (i: Ingredient) =>
-                        (i.getName() === ingredient.getName())) >= 0) {
+                if (thisComponent.props.ownedIngredients.filter(
+                    (i) => i.softEquals(ingredient)).length > 0) {
 
                     return <li className="list-group-item"
                         key={ingredient.hashCode()}>
                         <div className="row">
-                            <span className="text-left list-group-item-text col-xs-8">
+                            <span className="text-left col-xs-8">
                                 {ingredient.toString()}</span>
-                            <span className="list-group-item-text badge col-xs-3">
-                                Have</span>
                         </div>
                     </li>;
                 }
@@ -38,16 +33,15 @@ export default class RecipeComponent extends React.Component<IRecipeProps, {}> {
         let notOwnedIngredients = this.props.recipe.getIngredients()
             .map(function (ingredient) {
 
-                if (thisComponent.props.ownedIngredients.findIndex(
-                    (i: Ingredient) =>
-                        (i.getName() === ingredient.getName())) < 0) {
+                if (thisComponent.props.ownedIngredients.filter(
+                    (i) => i.softEquals(ingredient)).length === 0) {
 
                     return <li className="list-group-item"
                         key={ingredient.hashCode()}>
                         <div className="row">
-                            <span className="text-left list-group-item-text col-xs-8">
+                            <span className="text-left col-xs-8">
                                 {ingredient.toString()}</span>
-                            <span className="list-group-item-text badge col-xs-3">
+                            <span className="label label-warning col-xs-3">
                                 Don't have</span>
                         </div>
                     </li>;

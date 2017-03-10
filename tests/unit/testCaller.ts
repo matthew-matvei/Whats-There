@@ -4,7 +4,7 @@ import Ingredient from "../../src/ingredient";
 import Recipe from "../../src/recipe";
 import { FoodToForkCaller, YummlyCaller, MashapeCaller } from
     "../../src/api/caller";
-import Constants from "../../src/constants";
+import { Constants } from "../../src/constants";
 import CallerUtils from "../../src/api/callerUtils";
 import { ICallOptions } from "../../src/api/callOptions";
 import { IMashapeRecipe, IYummlyRecipe, IMashapeIngredient } from

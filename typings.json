@@ -2,6 +2,7 @@
     "globalDependencies": {
         "express-serve-static-core": "registry:dt/express-serve-static-core#4.0.0+20161012061536",
         "node": "registry:dt/node#6.0.0+20161110151007",
+        "react-imageloader": "registry:dt/react-imageloader#2.1.0+20161121205806",
         "require": "registry:dt/require#2.1.20+20160919185614",
         "sqlite3": "registry:dt/sqlite3#2.2.3+20160724070935",
         "uuid": "registry:dt/uuid#3.3.0+20160728152600"

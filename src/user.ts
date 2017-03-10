@@ -4,7 +4,8 @@
 
 import Recipe from "./recipe";
 import Ingredient from "./ingredient";
-import Constants from "./constants";
+import { Queue } from "./structures";
+import { Constants } from "./constants";
 
 let uuid = require("uuid");
 
@@ -36,10 +37,10 @@ export abstract class User {
     private favRecipes: Array<Recipe>;
 
     // stores the user's MAX_PAST_RECIPES recent recipes.
-    private pastRecipes: Array<Recipe>;
+    private pastRecipes: Queue<Recipe>;
 
     // stores the user's allergies.
-    private allergies: Array<string>;
+    private allergies: {};
 
     /**
      * Creates an instance of User.
@@ -56,7 +57,7 @@ export abstract class User {
      *      a list of the user's allergies, if any
      */
     constructor(name: string, ingredients: Array<Ingredient>,
-        favRecipes: Array<Recipe>, pastRecipes: Array<Recipe>,
+        favRecipes: Array<Recipe>, pastRecipes: Queue<Recipe>,
         allergies: Array<string>) {
 
         // following checks validity of given parameters
@@ -84,7 +85,7 @@ export abstract class User {
 
             throw new RangeError("Illegal number of favourite recipes");
 
-        } else if (pastRecipes.length > Constants.MAX_PAST_RECIPES) {
+        } else if (pastRecipes.getSize() > Constants.MAX_PAST_RECIPES) {
 
             throw new RangeError("Illegal number of past recipes");
         }
@@ -205,51 +206,11 @@ export abstract class User {
      * MAX_PAST_RECIPES, method removes the last recipe and adds the new one.
      *
      * @param recipe
+     *          the recipe to add to the queue of past recipes
      */
     public addPastRecipe(recipe: Recipe): void {
 
-        /*
-         * If the length of an array returned by filtering this.pastRecipes
-         * where this.pastRecipes[i].equals(recipe) is greater than 0, given
-         * recipe already exists, so method returns.
-         */
-        if (this.pastRecipes.filter((i) => i.equals(recipe)).length > 0) {
-
-            return;
-        }
-
-        // since length of past recipes is limited, pops if length is equal max
-        if (this.pastRecipes.length === Constants.MAX_PAST_RECIPES) {
-
-            this.pastRecipes.pop();
-        }
-
-        this.pastRecipes.unshift(recipe);
-    }
-
-    /**
-     * Method removes a recipe from the user's list of past recipes. If
-     * the recipe is not found, the method just returns false.
-     *
-     * @param recipe
-     *      the recipe to be removed from the user's list of past recipes
-     *
-     * @return false in the case where given recipe could not be found
-     */
-    public removePastRecipe(recipe: Recipe): boolean {
-
-        let index: number;
-        if ((index = this.pastRecipes.findIndex(
-            (i: Recipe) => i.equals(recipe))) < 0) {
-
-            return false;
-
-        } else {
-
-            this.pastRecipes.splice(index, 1);
-
-            return true;
-        }
+        this.pastRecipes.enqueue(recipe);
     }
 
     /**
@@ -263,17 +224,10 @@ export abstract class User {
      */
     public addAllergy(allergyName: string): void {
 
-        /*
-         * If the length of an array returned by filtering this.allergies
-         * where this.allergies[i].equals(allergyName) is greater than 0, given
-         * allergy already exists, so method returns.
-         */
-        if (this.allergies.filter((i) => i === allergyName).length > 0) {
+        if (!this.allergies[allergyName]) {
 
-            return;
+            this.allergies[allergyName] = allergyName;
         }
-
-        this.allergies.push(allergyName);
     }
 
     /**
@@ -287,17 +241,14 @@ export abstract class User {
      */
     public removeAllergy(allergyName: string): boolean {
 
-        let index: number;
-        if (this.allergies.findIndex((i: string) => i === allergyName) < 0) {
+        let existed = false;
+        if (this.allergies[allergyName]) {
 
-            return false;
-
-        } else {
-
-            this.allergies.splice(index, 1);
-
-            return true;
+            existed = true;
+            delete this.allergies[allergyName];
         }
+
+        return existed;
     }
 
     /**
@@ -366,7 +317,7 @@ export abstract class User {
      */
     public getPastRecipes(): Array<Recipe> {
 
-        return new Array<Recipe>().concat(this.pastRecipes);
+        return new Array<Recipe>().concat(this.pastRecipes.toArray());
     }
 
     /**
@@ -378,7 +329,17 @@ export abstract class User {
      */
     public getAllergies(): Array<string> {
 
-        return new Array<string>().concat(this.allergies);
+        let result = new Array<string>();
+
+        for (let allergen in this.allergies) {
+
+            if (this.allergies.hasOwnProperty(allergen)) {
+
+                result.push(allergen);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -487,7 +448,8 @@ export class RegisteredUser extends User {
         allergens: Array<string>) {
 
         super(name, new Array<Ingredient>(), new Array<Recipe>(),
-            new Array<Recipe>(), new Array<string>());
+            new Queue<Recipe>(new Array<Recipe>(), Constants.MAX_PAST_RECIPES),
+            new Array<string>());
     }
 
     /**
@@ -547,7 +509,8 @@ export class UnregisteredUser extends User {
 
         // any unregistered user has an empty list of ingredients and recipes
         super(defaultName, new Array<Ingredient>(), new Array<Recipe>(),
-            new Array<Recipe>(), new Array<string>());
+            new Queue<Recipe>(new Array<Recipe>(), Constants.MAX_PAST_RECIPES),
+            new Array<string>());
 
         // any unregistered user must have a UUID
         this.id = uuid.v1();

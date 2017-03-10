@@ -17,6 +17,7 @@ describe("Class FoodToForkFilter's", function () {
     let userOptions: ICallOptions;
 
     let ingredient1: Ingredient;
+    let ingredient1Comma: Ingredient;
     let ingredient2: Ingredient;
     let ingredient3: Ingredient;
     let ingredient4: Ingredient;
@@ -25,6 +26,7 @@ describe("Class FoodToForkFilter's", function () {
     let ingredient7: Ingredient;
 
     let recipeA: Recipe;
+    let recipeAComma: Recipe;
     let recipeB: Recipe;
     let recipeC: Recipe;
 
@@ -42,6 +44,7 @@ describe("Class FoodToForkFilter's", function () {
         ftfFilter = new FoodToForkFilter();
 
         ingredient1 = new Ingredient("Ingredient1", 10, "");
+        ingredient1Comma = new Ingredient("Ingredient1,", 10, "");
         ingredient2 = new Ingredient("Ingredient2", 10, "");
         ingredient3 = new Ingredient("Ingredient3", 10, "");
         ingredient4 = new Ingredient("Ingredient4", 10, "");
@@ -52,6 +55,10 @@ describe("Class FoodToForkFilter's", function () {
         recipeA = new Recipe("RecipeA", [ingredient1, ingredient2,
             ingredient3], "Method", new Array<string>(), "Image", "URL", 10,
             10);
+
+        recipeAComma = new Recipe("RecipeAComma", [ingredient1Comma,
+            ingredient2, ingredient3], "Method", new Array<string>(), "Image",
+            "URL", 10, 10);
 
         recipeB = new Recipe("RecipeB", [ingredient1, ingredient2,
             ingredient4], "Method", new Array<string>(), "Image", "URL", 10,
@@ -101,6 +108,15 @@ describe("Class FoodToForkFilter's", function () {
             expect(ftfFilter.filterByIngredients(response, userOptions))
                 .to.deep.equal(expected);
         });
+
+        it("can handle ingredients with commas", function () {
+
+            let response = [recipeC, recipeAComma, recipeB];
+            let expected = [recipeAComma, recipeB, recipeC];
+
+            expect(ftfFilter.filterByIngredients(response, userOptions))
+                .to.deep.equal(expected);
+        });
     });
 
     describe("compare() method", function () {
@@ -135,6 +151,12 @@ describe("Class FoodToForkFilter's", function () {
                 expect(ftfFilter.compare(recipeB, recipeA, userOptions))
                     .to.equal(1);
             });
+
+        it("can handle ingredients with commas", function () {
+
+            expect(ftfFilter.compare(recipeA, recipeAComma, userOptions))
+                .to.equal(0);
+        });
     });
 
     describe("isRelevant() method", function () {

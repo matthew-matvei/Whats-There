@@ -1,4 +1,5 @@
 import { User } from "../user";
+import { UpdateType } from "../constants";
 import Recipe from "../recipe";
 import Ingredient from "../ingredient";
 
@@ -33,9 +34,9 @@ export interface ISideBarProps {
     ingredients: Array<Ingredient>;
     favRecipes: Array<Recipe>;
     pastRecipes: Array<Recipe>;
-    pullNewIngredient: (updateType: string, ingredient: Ingredient) => void;
+    pullNewIngredient: (updateType: UpdateType, ingredient: Ingredient) => void;
     pullSearchClick: () => void;
-    pullNewRecipe: (updateType: string, recipe: Recipe) => void;
+    pullNewRecipe: (updateType: UpdateType, recipe: Recipe) => void;
 }
 
 /** Interface represents the properties for the actions Component. */
@@ -48,15 +49,17 @@ export interface IActionsProps {
 export interface IIngredientListProps {
 
     ingredients: Array<Ingredient>;
-    onClickAddIngredient: (updateType: string, ingredient: Ingredient) => void;
-    onClickRemoveIngredient: (updateType: string, ingredient: Ingredient) => void;
+    onClickAddIngredient: (updateType: UpdateType,
+        ingredient: Ingredient) => void;
+    onClickRemoveIngredient: (updateType: UpdateType,
+        ingredient: Ingredient) => void;
 }
 
 /** Interface represents the properties for the list of recipes Component. */
 export interface IFavRecipeListProps {
 
     recipes: Array<Recipe>;
-    onClickRemoveFavRecipe: (updateType: string, recipe: Recipe) => void;
+    onClickRemoveFavRecipe: (updateType: UpdateType, recipe: Recipe) => void;
 }
 
 export interface IPastRecipeListProps {
@@ -71,7 +74,7 @@ export interface IMainProps {
     ownedIngredients: Array<Ingredient>;
     name: string;
     isSearching: boolean;
-    pullNewFavouriteRecipe: (updateType: string, recipe: Recipe) => void;
+    pullNewFavouriteRecipe: (updateType: UpdateType, recipe: Recipe) => void;
     pullNewPastRecipe: (recipe: Recipe) => void;
 }
 

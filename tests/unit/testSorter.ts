@@ -3,16 +3,18 @@ let expect = require("chai").expect;
 import Sorter from "../../src/sorter";
 import Recipe from "../../src/recipe";
 import Ingredient from "../../src/ingredient";
-import Constants from "../../src/constants";
+import { Constants } from "../../src/constants";
 
 describe("Class Sorter's sort() method,", function () {
 
     let recipe1: Recipe;
+    let recipe1Comma: Recipe;
     let recipe2: Recipe;
     let recipe3: Recipe;
     let recipeZero: Recipe;
     let recipes: Array<Recipe>;
     let ingredient1: Ingredient;
+    let ingredient1Comma: Ingredient;
     let ingredient2: Ingredient;
     let ingredient3: Ingredient;
     let ingredient4: Ingredient;
@@ -25,6 +27,7 @@ describe("Class Sorter's sort() method,", function () {
     before(function () {
 
         ingredient1 = new Ingredient("Ingredient1", 10, "");
+        ingredient1Comma = new Ingredient("Ingredient1,", 10, "");
         ingredient2 = new Ingredient("Ingredient2", 10, "");
         ingredient3 = new Ingredient("Ingredient3", 10, "");
         ingredient4 = new Ingredient("Ingredient4", 10, "");
@@ -33,6 +36,9 @@ describe("Class Sorter's sort() method,", function () {
 
         recipe1 = new Recipe("Recipe1", [ingredient1, ingredient2, ingredient3],
             "Method", new Array<string>(), "Image", "URL", 10, 10);
+        recipe1Comma = new Recipe("Recipe1Comma", [ingredient1Comma,
+            ingredient2, ingredient3], "Method", new Array<string>(), "Image",
+            "URL", 10, 10);
         recipe2 = new Recipe("Recipe2", [ingredient1, ingredient2, ingredient4],
             "Method", new Array<string>(), "Image", "URL", 9, 9);
         recipe3 = new Recipe("Recipe2", [ingredient1, ingredient4, ingredient5],
@@ -94,6 +100,15 @@ describe("Class Sorter's sort() method,", function () {
                 expect(Sorter.sort(recipes, userIngredients, sortCriteria,
                     sortOrder)).to.deep.equal(expected);
             });
+
+            it("can handle ingredients with commas", function () {
+
+                recipes = [recipe2, recipe1Comma];
+                expected = [recipe1Comma, recipe2];
+
+                expect(Sorter.sort(recipes, userIngredients, sortCriteria,
+                    sortOrder)).to.deep.equal(expected);
+            });
         });
 
         describe("in ascending order,", function () {
@@ -116,6 +131,15 @@ describe("Class Sorter's sort() method,", function () {
 
                 recipes = [recipe2, recipe1, recipe3];
                 expected = [recipe3, recipe2, recipe1];
+
+                expect(Sorter.sort(recipes, userIngredients, sortCriteria,
+                    sortOrder)).to.deep.equal(expected);
+            });
+
+            it("can handle ingredients with commas", function () {
+
+                recipes = [recipe1Comma, recipe2];
+                expected = [recipe2, recipe1Comma];
 
                 expect(Sorter.sort(recipes, userIngredients, sortCriteria,
                     sortOrder)).to.deep.equal(expected);

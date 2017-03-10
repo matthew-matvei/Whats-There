@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as $ from "jquery";
 
-import Constants from "../constants";
+import { Constants } from "../constants";
 
 import WelcomeComponent from "./WelcomeComponent";
 
@@ -13,21 +13,43 @@ export default class HeaderComponent extends React.Component<IHeaderProps, {}> {
 
         return <nav className="navbar navbar-default navbar-fixed-top col-xs-12"
             role="navigation">
-            <div className="container">
-                <div className="navbar-header col-xs-7">
+            <div className="container-fluid">
+                <div className="navbar-header">
                     <a className="navbar-brand">What's there?</a>
                 </div>
-                <form className="navbar-form col-xs-2">
-                    <label htmlFor="orderSelect">Order&nbsp;</label>
-                    <div className="form-group">
-                        <select className="form-control" id="orderSelect">
-                            <option>{Constants.SORT_BY_RELEVANCE}</option>
-                            <option>{Constants.SORT_BY_TIME_TAKEN}</option>
-                            <option>{Constants.SORT_BY_SERVINGS}</option>
-                        </select>
-                    </div>
-                </form>
-                <WelcomeComponent name={this.props.name} />
+                <ul className="nav navbar-nav navbar-right">
+                    <li>
+                        <form className="navbar-form">
+                            <div className="form-group">
+                                <label>Order&nbsp;</label>
+                                <select className="form-control"
+                                    id="sortOrder">
+                                    <option>
+                                        {Constants.SORT_DESCENDING}
+                                    </option>
+                                    <option>
+                                        {Constants.SORT_ASCENDING}
+                                    </option>
+                                </select>
+                                <select className="form-control"
+                                    id="sortCriteria">
+                                    <option>
+                                        {Constants.SORT_BY_RELEVANCE}
+                                    </option>
+                                    <option>
+                                        {Constants.SORT_BY_TIME_TAKEN}
+                                    </option>
+                                    <option>
+                                        {Constants.SORT_BY_SERVINGS}
+                                    </option>
+                                </select>
+                            </div>
+                        </form>
+                    </li>
+                    <li>
+                        <WelcomeComponent name={this.props.name} />
+                    </li>
+                </ul>
             </div>
         </nav>;
     }
@@ -36,14 +58,16 @@ export default class HeaderComponent extends React.Component<IHeaderProps, {}> {
 
         let thisComponent = this;
 
-        $("#orderSelect").change(function () {
+        let handleValueChange = function () {
 
-            let criteria = $("#orderSelect").val();
+            let order = $("#sortOrder").val();
+            let criteria = $("#sortCriteria").val();
 
-            // TODO: also get sort order
+            thisComponent.handleSortChange(criteria, order);
+        };
 
-            thisComponent.handleSortChange(criteria, Constants.SORT_DESCENDING);
-        });
+        $("#sortOrder").change(handleValueChange);
+        $("#sortCriteria").change(handleValueChange);
     }
 
     private shouldComponentUpdate(nextProps: IHeaderProps): boolean {

@@ -1,8 +1,6 @@
 import fs = require("fs");
-import * as sqlite3 from "sqlite3";
 
 import { Database } from "../../src/db/database";
-import Constants from "../../src/constants";
 
 let expect = require("chai").expect;
 let assert = require("chai").assert;

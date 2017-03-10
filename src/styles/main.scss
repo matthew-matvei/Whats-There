@@ -1,8 +1,14 @@
+@import "variables";
 @import "external/bootstrap-custom";
+@import "bootswatch";
 @import "recipe";
 @import "sidebar";
 body {
-    padding-top: 70px;
+    padding-top: 90px;
+}
+
+select.form-control {
+    padding-left: 10px;
 }
 
 
@@ -37,6 +43,13 @@ body {
 
 .gi-xxl {
     font-size: 10em;
+}
+
+
+/* Ensures recipe images take up a larger amount of space. */
+
+img {
+    width: 90%;
 }
 
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import Ingredient from "../ingredient";
-import Constants from "../constants";
+import { Constants, UpdateType } from "../constants";
 
 import IngredientPopOverComponent from "./IngredientPopOverComponent";
 import { IIngredientListProps } from "./componentInterfaces";
@@ -23,14 +23,12 @@ export default class IngredientListComponent extends
 
             return <li key={ingredient.toString()} className="list-group-item">
                 <div className="row">
-                    <span className="list-group-item-text text-capitalize col-xs-10">
+                    <span className="text-capitalize col-xs-9">
                         {ingredient.toString()}</span>
-                    <div className="col-xs-2">
-                        <button name={ingredient.toString()}
+                    <div className="col-xs-3">
+                        <span id={ingredient.hashCode().toString()}
                             onClick={thisComponent.handleRemoveIngredient}
-                            className="btn btn-default btn-xs">
-                            <span className="glyphicon glyphicon-minus"></span>
-                        </button>
+                            className="glyphicon glyphicon-minus btn btn-warning btn-xs"></span>
                     </div>
                 </div>
             </li>;
@@ -40,10 +38,10 @@ export default class IngredientListComponent extends
             Constants.MAX_INGREDIENTS ?
             <li className="list-group-item">
                 <div className="row">
-                    <span className="list-group-item-text text-muted col-xs-10">
+                    <span className="text-muted col-xs-9">
                         <em>Add ingredient</em>
                     </span>
-                    <div className="col-xs-2">
+                    <div className="col-xs-3">
                         <IngredientPopOverComponent
                             onClickAddIngredient={this.handleAddIngredient} />
                     </div>
@@ -77,17 +75,17 @@ export default class IngredientListComponent extends
 
     private handleAddIngredient(ingredient: Ingredient): void {
 
-        this.props.onClickAddIngredient(Constants.UPDATE_ADD, ingredient);
+        this.props.onClickAddIngredient(UpdateType.ADD, ingredient);
     }
 
     private handleRemoveIngredient(e: any): void {
 
         for (let ingredient of this.props.ingredients) {
 
-            if (e.target.name === ingredient.toString()) {
+            if (e.target.id === ingredient.hashCode().toString()) {
 
                 this.props.onClickRemoveIngredient(
-                    Constants.UPDATE_REMOVE, ingredient);
+                    UpdateType.REMOVE, ingredient);
 
                 return;
             }

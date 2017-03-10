@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Constants from "../constants";
+import { UpdateType } from "../constants";
 
 import { IFavRecipeListProps } from "./componentInterfaces";
 
@@ -20,7 +20,7 @@ export default class FavRecipeListComponent extends
         let recipes = this.props.recipes.length === 0 ?
             <li className="list-group-item">
                 <div className="row">
-                    <span className="list-group-item-text text-muted col-xs-10">
+                    <span className="text-muted col-xs-10">
                         <em>Search to find recipes</em>
                     </span>
                     <div className="col-xs-2"></div>
@@ -29,7 +29,7 @@ export default class FavRecipeListComponent extends
 
                 return <li key={listItem.getName()} className="list-group-item">
                     <div className="row">
-                        <span className="list-group-item-text text-capitalize col-xs-10">
+                        <span className="text-capitalize col-xs-10">
                             {listItem.getName()}</span>
                         <div className="col-xs-2">
                             <button className="btn btn-default btn-xs"
@@ -56,7 +56,7 @@ export default class FavRecipeListComponent extends
             if (e.target.name === recipe.hashCode().toString()) {
 
                 this.props.onClickRemoveFavRecipe(
-                    Constants.UPDATE_REMOVE, recipe);
+                    UpdateType.REMOVE, recipe);
 
                 return;
             }

@@ -1,5 +1,5 @@
 /** @classdesc Class stores constants to be used throughout the project. */
-export default class Constants {
+export class Constants {
 
     /* ---------------- model-side constant values ----------------------- */
     public static readonly MAX_FAV_RECIPES = 10;
@@ -65,8 +65,6 @@ export default class Constants {
     public static readonly SYMBOL_FOUR_FIFTHS = "⅘";
 
     /* ----------------- MISCELLANY -------------------------------------- */
-    public static readonly UPDATE_ADD = "ADD";
-    public static readonly UPDATE_REMOVE = "REMOVE";
     public static readonly VALUE_NOT_FOUND = -1;
 
     // minimum number of results server should leave unfiltered
@@ -74,4 +72,9 @@ export default class Constants {
 
     // threshold for missed words when finding ingredient name matches
     public static readonly RELEVANCE_THRESHOLD = 3;
+}
+
+export enum UpdateType {
+    ADD,
+    REMOVE
 }

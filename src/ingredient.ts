@@ -175,12 +175,15 @@ export default class Ingredient {
         // in case the ingredient name contains more than one word
         for (let word of this.getName().split(" ")) {
 
+            // trailing commas are stripped out
+            word = word.replace(",", "");
+
             /*
              * If filtering using the current word returns an array of length
              * greater than 0, a match has been found, method returns true.
              */
             if (otherIngredient.getName().split(" ").filter(
-                (w) => w === word).length > 0) {
+                (w) => w.replace(",", "") === word).length > 0) {
 
                 return true;
             }

@@ -3,7 +3,7 @@
 import * as sqlite3 from "sqlite3";
 let fs = require("fs");
 
-import Constants from "../constants";
+import { Constants } from "../constants";
 
 import { IDBSearch, IDBRecipe } from "./DBInterfaces";
 

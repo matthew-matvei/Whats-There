@@ -9,7 +9,6 @@ export default class Recipe {
     /*
      * Class invariant:
      *      this.name !== "" && this.name !== undefined
-     *  &&  this.imageURL
      *  &&  this.sourceURL
      *  &&  this.ingredients.length > 0 && this.ingredient !== undefined
      *  &&  this.method === null --> instructions for recipe does not exist
@@ -93,10 +92,6 @@ export default class Recipe {
         } else if (!allergens) {
 
             throw new TypeError("Recipe allergens must be defined");
-
-        } else if (!imageURL) {
-
-            throw new TypeError("Recipe imageURL must be defined");
 
         } else if (!source) {
 

@@ -1,6 +1,6 @@
 import Recipe from "./recipe";
 import Ingredient from "./ingredient";
-import Constants from "./constants";
+import { Constants } from "./constants";
 import Utils from "./utils";
 
 /**

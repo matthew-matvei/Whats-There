@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import Recipe from "../recipe";
-import Constants from "../constants";
+import { UpdateType } from "../constants";
 
 import RecipeComponent from "./RecipeComponent";
 import RecipeModalComponent from "./RecipeModalComponent";
@@ -86,6 +86,6 @@ export default class MainComponent extends
 
     private moveAddFavouriteRecipeUp(recipe: Recipe): void {
 
-        this.props.pullNewFavouriteRecipe(Constants.UPDATE_ADD, recipe);
+        this.props.pullNewFavouriteRecipe(UpdateType.ADD, recipe);
     }
 }

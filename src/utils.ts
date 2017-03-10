@@ -31,6 +31,10 @@ export default class Utils {
 
             let objAsNumber = <number>obj;
             return this.hashNumber(objAsNumber);
+
+        } else {
+
+            return 0;
         }
     }
 

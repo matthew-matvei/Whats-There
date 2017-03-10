@@ -10,7 +10,7 @@ export default class RecipeListComponent extends
         let recipes = this.props.recipes.length === 0 ?
             <li className="list-group-item">
                 <div className="row">
-                    <span className="list-group-item-text text-muted col-xs-10">
+                    <span className="text-muted col-xs-10">
                         <em>No past recipes</em>
                     </span>
                 </div>
@@ -18,7 +18,7 @@ export default class RecipeListComponent extends
 
                 return <li key={listItem.getName()} className="list-group-item">
                     <div className="row">
-                        <span className="list-group-item-text text-capitalize col-xs-10">
+                        <span className="text-capitalize col-xs-10">
                             {listItem.getName()}</span>
                     </div>
                 </li>;

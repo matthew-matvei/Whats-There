@@ -11,6 +11,7 @@ describe("Class Ingredient's", function () {
     let ingredient: Ingredient;
     let ingredient2: Ingredient;
     let ingredientSoft: Ingredient;
+    let ingredientSoftComma: Ingredient;
     let ingredientSoft2: Ingredient;
 
     before(function () {
@@ -177,6 +178,13 @@ describe("Class Ingredient's", function () {
                 ingredientSoft2 = new Ingredient("Ingredient", 10, "");
 
                 expect(ingredientSoft.softEquals(ingredientSoft2)).to.be.true;
+            });
+
+        it("returns true if only difference in names is trailing " +
+            "comma", function () {
+
+                ingredientSoft = new Ingredient("Ingredient", 10, "");
+                ingredientSoftComma = new Ingredient("Ingredient,", 10, "");
             });
     });
 });

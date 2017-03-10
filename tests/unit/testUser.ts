@@ -3,7 +3,7 @@
 import { UnregisteredUser } from "../../src/user";
 import Recipe from "../../src/recipe";
 import Ingredient from "../../src/ingredient";
-import Constants from "../../src/constants";
+import { Constants } from "../../src/constants";
 
 let expect = require("chai").expect;
 
@@ -362,43 +362,6 @@ describe("Class UnregisteredUser's", function () {
 
                 expect(user.getPastRecipes()).to.not.include(pushedOutRecipe);
             });
-    });
-
-    describe("removePastRecipe() method", function () {
-
-        it("can remove a past recipe", function () {
-
-            user.addPastRecipe(recipe);
-            user.addPastRecipe(recipe2);
-            user.removePastRecipe(recipe2);
-
-            expect(user.getPastRecipes()).to.not.include(recipe2);
-        });
-
-        it("removes past recipe that is not last in list", function () {
-
-            user.addPastRecipe(recipe);
-            user.addPastRecipe(recipe2);
-            user.removePastRecipe(recipe);
-
-            expect(user.getPastRecipes()).to.not.include(recipe);
-        });
-
-        it("returns false when given recipe isn't in list", function () {
-
-            let recipeToRemove = new Recipe("Recipe2",
-                [new Ingredient("Ingredient2", 20, "ml")], "Method",
-                new Array<string>(), "IMG", "URL", 1, 1);
-
-            user.addPastRecipe(recipe);
-
-            expect(user.removePastRecipe(recipeToRemove)).to.be.false;
-        });
-
-        it("returns false when list is empty", function () {
-
-            expect(user.removePastRecipe(recipe)).to.be.false;
-        });
     });
 
     describe("addAllergy() method", function () {

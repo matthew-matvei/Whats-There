@@ -2,7 +2,7 @@
 
 import Q = require("q");
 
-import Constants from "../constants";
+import { Constants } from "../constants";
 import { Database } from "../db/database";
 import Ingredient from "../ingredient";
 import Recipe from "../recipe";
@@ -17,8 +17,6 @@ import { FoodToForkFilter, MashapeFilter, YummlyFilter } from "./filter";
 
 let qs = require("querystring");
 let uniRest = require("unirest");
-
-// TODO: consider making interface an abstract class, in order to reduced repeated code in sub-classes' call() and get() methods
 
 /**
  * @interface Interface defines the API caller, which other API classes that
@@ -380,8 +378,6 @@ export class MashapeCaller implements ICaller {
 
     /** @inheritdoc */
     public call(userOptions: ICallOptions): Promise<Array<Recipe>> {
-
-        // TODO: result.headers.x-ratelimit-requests-remaining could be used to identify when it's necessary to stop
 
         // since 'this' loses scope inside the Promise, we store it here
         let thisCaller = this;

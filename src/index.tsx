@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 
 import Ingredient from "./ingredient";
 import AppComponent from "./components/AppComponent";
-import Constants from "./constants";
+import { Constants } from "./constants";
 import { UnregisteredUser } from "./user";
 
 // stores global session user
